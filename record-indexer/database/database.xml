@@ -1,0 +1,111 @@
+<indexerdata>
+  <users>
+    <user>
+      <username>test1</username>
+      <password>test1</password>
+      <firstname>Test</firstname>
+      <lastname>One</lastname>
+      <email>test1@gmail.com</email>
+      <indexedrecords>0</indexedrecords>
+    </user>
+    <user>
+      <username>test2</username>
+      <password>test2</password>
+      <firstname>Test</firstname>
+      <lastname>Two</lastname>
+      <email>test2@gmail.com</email>
+      <indexedrecords>0</indexedrecords>
+    </user>
+  </users>
+  <projects>
+<project>
+  <title>Draft Records</title>
+  <recordsperimage>7</recordsperimage>
+  <firstycoord>195</firstycoord>
+  <recordheight>65</recordheight>
+  <fields>
+<field>
+<title>Last Name</title>
+<xcoord>75</xcoord>
+<width>325</width> <helphtml>fieldhelp/last_name.html</helphtml> <knowndata>knowndata/draft_last_names.txt</knowndata>
+    </field>
+    <field>
+<title>First Name</title>
+<xcoord>400</xcoord>
+<width>325</width> <helphtml>fieldhelp/first_name.html</helphtml> <knowndata>knowndata/draft_first_names.txt</knowndata>
+    </field>
+    <field>
+<title>Age</title> <xcoord>725</xcoord> <width>120</width> <helphtml>fieldhelp/age.html</helphtml>
+    </field>
+    <field>
+<title>Ethnicity</title>
+<xcoord>845</xcoord>
+<width>450</width> <helphtml>fieldhelp/ethnicity.html</helphtml> <knowndata>knowndata/ethnicities.txt</knowndata>
+    </field>
+  </fields>
+  <images>
+    <image>
+      <file>images/draft_image0.png</file>
+      <records>
+        <record>
+          <values>
+            <value>FOX</value>
+            <value>RUSSELL</value>
+            <value>19</value>
+            <value>ALASKA NATIVE</value>
+          </values>
+        </record>
+        <record>
+          <values>
+            <value>BARTLETT</value>
+            <value>DAVE</value>
+            <value>21</value>
+            <value>HISPANIC</value>
+</values>
+            </record>
+            <record>
+              <values>
+                <value>ACOSTA</value>
+                <value>JEROME</value>
+                <value>28</value>
+                <value>ALASKA NATIVE</value>
+              </values>
+            </record>
+            <record>
+              <values>
+                <value>HALL</value>
+                <value>JAY</value>
+                <value>20</value>
+                <value>NATIVE HAWAIIAN</value>
+              </values>
+            </record>
+            <record>
+              <values>
+                <value>MILES</value>
+                <value>LUTHER</value>
+                <value>28</value>
+                <value>NATIVE HAWAIIAN</value>
+              </values>
+            </record>
+            <record>
+              <values>
+                <value>JARVIS</value>
+                <value>LEROY</value>
+                <value>24</value>
+                <value>WHITE</value>
+              </values>
+            </record>
+            <record>
+              <values>
+                <value>DUNN</value>
+                <value>TED</value>
+                <value>29</value>
+                <value>BLACK</value>
+              </values>
+            </record>
+          </records>
+        </image>
+      </images>
+    </project>
+  </projects>
+</indexerdata>
