@@ -1,7 +1,11 @@
 package client.communication;
 
 import shared.communication.*;
-
+/**
+ * Facilitates communication between client and server
+ * @author zsjensen
+ *
+ */
 public class ClientCommunicator 
 {
 

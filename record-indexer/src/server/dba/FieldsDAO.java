@@ -4,11 +4,18 @@ import java.util.ArrayList;
 
 import shared.model.Field;
 import shared.model.Project;
-
+/**
+ * Database access object for fields
+ * @author zsjensen
+ *
+ */
 public class FieldsDAO 
 {
 	private Database db;
-
+	/**
+	 * Constructs object and sets database
+	 * @param db
+	 */
 	public FieldsDAO(Database db) 
 	{
 		this.db = db;
@@ -25,9 +32,9 @@ public class FieldsDAO
 	/**
 	 * gets all fields in the specified project
 	 * @return an Array List containing all fields in the project
-	 * @param project - project you want to find fields for
+	 * @param projectID - project you want to find fields for
 	 */
-	public ArrayList<Field> getAll(Project project)
+	public ArrayList<Field> getAll(int projectID)
 	{
 		return null;
 	}

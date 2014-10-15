@@ -3,7 +3,8 @@ package server;
 import org.junit.* ;
 import static org.junit.Assert.* ;
 
-public class ServerUnitTests {
+public class ServerUnitTests 
+{
 	
 	@Before
 	public void setup() 
@@ -25,10 +26,12 @@ public class ServerUnitTests {
 		assertFalse(false);
 	}
 
-	public static void main(String[] args) {
-		
-		String[] testClasses = new String[] {
-				"server.ServerUnitTests"
+	public static void main(String[] args) 
+	{
+		String[] testClasses = new String[] 
+		{
+			"server.ServerUnitTests",
+			"server.dba.BatchesDAOTest"
 		};
 
 		org.junit.runner.JUnitCore.main(testClasses);

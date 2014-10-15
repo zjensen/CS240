@@ -15,19 +15,15 @@ public class Project
 	// CONSTUCTORS
 	// ------------------------------------------------------------------------------------
 	 /**
-	   * Initializes the project if there is NOT an ID delegated yet
-	   * @param title - Project's title
-	   * @param recordsPerImage - number of records(rows of values) per image in project
-	   * @param firstYCoord - Y coordinate of the first record in the image
-	   * @param recordHeight - height of each record(row) in the images
-	   */
-	public Project(String title, int recordsPerImage,int firstYCoord, int recordHeight)
+	  * Constructs project with no parameters
+	  */
+	public Project()
 	{
 		this.projectID = -1;
-		this.title = title;
-		this.recordsPerImage = recordsPerImage;
-		this.firstYCoord = firstYCoord;
-		this.recordHeight = recordHeight;
+		this.title = null;
+		this.recordsPerImage = -1;
+		this.firstYCoord = -1;
+		this.recordHeight = -1;
 	}
 	 /**
 	   * Initializes the project if there IS an ID delegated 

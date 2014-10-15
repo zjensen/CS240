@@ -1,14 +1,22 @@
 package server.dba;
-
+import java.sql.*;
 import java.util.ArrayList;
 
+import server.DatabaseException;
 import shared.model.Batch;
 import shared.model.Project;
-
+/**
+ * Database Access Object for batches
+ * @author zsjensen
+ *
+ */
 public class BatchesDAO 
 {
 	private Database db;
-
+	/**
+	 * Constructs object with database
+	 * @param db
+	 */
 	public BatchesDAO(Database db) 
 	{
 		this.db = db;
@@ -24,10 +32,10 @@ public class BatchesDAO
 	}
 	/**
 	 * Returns all batches in the specified project
-	 * @param project - project you want values for
+	 * @param projectID - id of the project you want batches for
 	 * @returns - ArrayList containing all batches in the project
 	 */
-	public ArrayList<Batch> getAll(Project project)
+	public ArrayList<Batch> getAll(int projectID)
 	{	
 		return null;
 	}
@@ -35,11 +43,32 @@ public class BatchesDAO
 	 * Searches the database for a batch that matches the desired ID
 	 * @param batchID - the ID of the batch you want
 	 * @return batch = the batch belonging to the ID
+	 * @throws DatabaseException 
 	 */
-	public Batch get(int batchID)
+	public Batch get(int batchID) throws DatabaseException
 	{
-		
-		return null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		Batch batch = new Batch();
+		try
+		{
+			String sql = "select * from batches where batchID = ?";
+			stmt = db.getConnection().prepareStatement(sql);
+			rs = stmt.executeQuery();
+			while(rs.next())
+			{
+				batch.setBatchID(rs.getInt(1));
+				batch.setProjectID(rs.getInt(2));
+				batch.setFile(rs.getString(3));
+				batch.setCompleted(rs.getBoolean(4));
+				batch.setUserID(rs.getInt(5));
+			}
+		}
+		catch(SQLException e)
+		{
+			throw new DatabaseException();
+		}
+		return batch;
 	}
 	/**
 	 * Adds batch to the database
@@ -65,5 +94,4 @@ public class BatchesDAO
 	{
 		
 	}
-	
 }

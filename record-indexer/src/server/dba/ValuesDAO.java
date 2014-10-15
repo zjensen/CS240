@@ -7,11 +7,18 @@ import shared.model.Field;
 import shared.model.Project;
 import shared.model.Record;
 import shared.model.Value;
-
+/**
+ * Database access object for values
+ * @author zsjensen
+ *
+ */
 public class ValuesDAO 
 {
 	private Database db;
-
+	/**
+	 * constructs object and sets database
+	 * @param db
+	 */
 	public ValuesDAO(Database db) 
 	{
 		this.db = db;

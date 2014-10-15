@@ -3,11 +3,18 @@ package server.dba;
 import java.util.ArrayList;
 
 import shared.model.Project;
-
+/**
+ * Database access object for projects
+ * @author zsjensen
+ *
+ */
 public class ProjectsDAO 
 {
 	private Database db;
-
+	/**
+	 * constructs object and sets database 
+	 * @param db
+	 */
 	public ProjectsDAO(Database db) 
 	{
 		this.db = db;

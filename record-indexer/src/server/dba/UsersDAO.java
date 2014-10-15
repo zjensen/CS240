@@ -2,7 +2,11 @@ package server.dba;
 import java.util.ArrayList;
 
 import shared.model.User;
-
+/**
+ * database access object for users
+ * @author zsjensen
+ *
+ */
 public class UsersDAO 
 {
 	private Database db;

@@ -15,7 +15,6 @@ public class Batch
 	 */
 	public Batch() 
 	{
-		super();
 		this.batchID = -1;
 		this.projectID = -1;
 		this.userID = -1;
@@ -32,7 +31,6 @@ public class Batch
 	   */
 	public Batch(int batchID, int projectID, int userID,boolean completed, String file) 
 	{
-		super();
 		this.batchID = batchID;
 		this.projectID = projectID;
 		this.userID = userID;

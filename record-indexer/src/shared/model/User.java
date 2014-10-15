@@ -54,9 +54,6 @@ public class User
 		this.currentBatch = currentBatch;
 	}
 
-
-
-
 	/**
 	 * @return the userID
 	 */

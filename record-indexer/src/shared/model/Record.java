@@ -21,20 +21,6 @@ public class Record
 		this.row = -1;
 	}
 	  /**
-	   * Initializes the record if an ID has NOT been delegated yet
-	   * @param batchID - image the record comes from
-	   * @param projectID - project the row is associated with
-	   * @param row - the row the record appears on in the image
-	   */
-	public Record(int projectID, int batchID, int row) 
-	{
-		super();
-		this.recordID = -1;
-		this.batchID = batchID;
-		this.projectID = projectID;
-		this.row = row;
-	}
-	  /**
 	   * Initializes the record if all information is available
 	   * @param recordID - unique identifier of the row
 	   * @param batchID - image the record comes from

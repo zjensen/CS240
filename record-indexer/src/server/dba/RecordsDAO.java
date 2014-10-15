@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import shared.model.Batch;
 import shared.model.Project;
 import shared.model.Record;
-
+/**
+ * database access object for records
+ * @author zsjensen
+ *
+ */
 public class RecordsDAO 
 {
 	private Database db;
