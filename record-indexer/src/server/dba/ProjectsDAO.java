@@ -1,7 +1,9 @@
 package server.dba;
 
+import java.sql.*;
 import java.util.ArrayList;
 
+import server.DatabaseException;
 import shared.model.Project;
 /**
  * Database access object for projects
@@ -41,10 +43,53 @@ public class ProjectsDAO
 	/**
 	 * Adds project to the database
 	 * @param project
+	 * @throws DatabaseException 
 	 */
-	public void add(Project project)
+	public int add(Project project) throws DatabaseException
 	{
-		
+		PreparedStatement stmt = null; 
+		Statement keyStmt = null; 
+		ResultSet keyRS = null;
+		int projectID;
+		try
+		{
+			String sql = "INSERT INTO projects (title, recordsPerImage, firstYCoord, recordHeight) VALUES (?,?,?,?)";
+			stmt = db.getConnection().prepareStatement(sql);
+			stmt.setString(1, project.getTitle());
+			stmt.setInt(2, project.getRecordsPerImage());
+			stmt.setInt(3, project.getFirstYCoord());
+			stmt.setInt(4, project.getRecordHeight());
+			if (stmt.executeUpdate() == 1) 
+			{
+				keyStmt = db.getConnection().createStatement();
+				keyRS = keyStmt.executeQuery("select last_insert_rowid()"); 
+				keyRS.next();
+				projectID = keyRS.getInt(1);
+			} 
+			else
+			{
+				throw new DatabaseException();
+			}
+		}
+		catch(SQLException e)
+		{
+			throw new DatabaseException();
+		}
+		finally
+		{
+			if(stmt != null)
+			{
+				try
+				{
+					stmt.close();
+				}
+				catch(SQLException e)
+				{
+					throw new DatabaseException();
+				}
+			}
+		}
+		return projectID;
 	}
 	/**
 	 * finds the project in the database, and replaces it's previous data with the current data

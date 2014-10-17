@@ -6,12 +6,12 @@ public class Field
 	
 	private int projectID;
 	
-	private int column;
 	private String title;
 	private int xCoord;
 	private int width;
 	private String helpHTML;
 	private String knownData;
+	private int column;
 	
 	 /**
 	   * Initializes the field with no data set
@@ -100,13 +100,13 @@ public class Field
 	/**
 	 * @return the xCoord
 	 */
-	public int getxCoord() {
+	public int getXCoord() {
 		return xCoord;
 	}
 	/**
 	 * @param xCoord the xCoord to set
 	 */
-	public void setxCoord(int xCoord) {
+	public void setXCoord(int xCoord) {
 		this.xCoord = xCoord;
 	}
 	/**

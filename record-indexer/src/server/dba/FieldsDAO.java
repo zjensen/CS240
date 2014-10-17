@@ -1,7 +1,12 @@
 package server.dba;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
+import server.DatabaseException;
 import shared.model.Field;
 import shared.model.Project;
 /**
@@ -51,10 +56,57 @@ public class FieldsDAO
 	/**
 	 * Adds field to the database
 	 * @param field
+	 * @throws DatabaseException 
 	 */
-	public void add(Field field)
+	public int add(Field field) throws DatabaseException
 	{
-		
+		PreparedStatement stmt = null; 
+		Statement keyStmt = null; 
+		ResultSet keyRS = null;
+		int fieldID;
+		try
+		{
+			String sql = "INSERT INTO projects (projectID, title, xCoord, width, helpHTML, knownData, column) VALUES (?,?,?,?,?,?,?)";
+			
+			stmt = db.getConnection().prepareStatement(sql);
+			stmt.setInt(1,field.getProjectID());
+			stmt.setString(2, field.getTitle());
+			stmt.setInt(3, field.getXCoord());
+			stmt.setInt(4, field.getWidth());
+			stmt.setString(5, field.getHelpHTML());
+			stmt.setString(6, field.getKnownData());
+			stmt.setInt(7, field.getColumn());
+			if (stmt.executeUpdate() == 1) 
+			{
+				keyStmt = db.getConnection().createStatement();
+				keyRS = keyStmt.executeQuery("select last_insert_rowid()"); 
+				keyRS.next();
+				fieldID = keyRS.getInt(1);
+			} 
+			else
+			{
+				throw new DatabaseException();
+			}
+		}
+		catch(SQLException e)
+		{
+			throw new DatabaseException();
+		}
+		finally
+		{
+			if(stmt != null)
+			{
+				try
+				{
+					stmt.close();
+				}
+				catch(SQLException e)
+				{
+					throw new DatabaseException();
+				}
+			}
+		}
+		return fieldID;
 	}
 	/**
 	 * finds the field in the database, and replaces it's previous data with the current data

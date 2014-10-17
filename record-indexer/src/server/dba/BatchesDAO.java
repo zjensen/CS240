@@ -24,20 +24,68 @@ public class BatchesDAO
 	
 	/**
 	 * Returns all batches in database
+	 * @throws DatabaseException 
 	 * @returns - ArrayList containing all Batches in the database
 	 */
-	public ArrayList<Batch> getAll()
+	public ArrayList<Batch> getAll() throws DatabaseException
 	{
-		return null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		ArrayList<Batch> batchList = new ArrayList<Batch>();
+		try
+		{
+			String sql = "SELECT * FROM batches";
+			stmt = db.getConnection().prepareStatement(sql);
+			rs = stmt.executeQuery();
+			while(rs.next())
+			{
+				Batch batch = new Batch();
+				batch.setBatchID(rs.getInt(1));
+				batch.setProjectID(rs.getInt(2));
+				batch.setFile(rs.getString(3));
+				batch.setCompleted(rs.getBoolean(4));
+				batch.setUserID(rs.getInt(5));
+				batchList.add(batch);
+			}
+		}
+		catch(SQLException e)
+		{
+			throw new DatabaseException();
+		}
+		return batchList;
 	}
 	/**
 	 * Returns all batches in the specified project
 	 * @param projectID - id of the project you want batches for
+	 * @throws DatabaseException 
 	 * @returns - ArrayList containing all batches in the project
 	 */
-	public ArrayList<Batch> getAll(int projectID)
+	public ArrayList<Batch> getAll(int projectID) throws DatabaseException
 	{	
-		return null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		ArrayList<Batch> batchList = new ArrayList<Batch>();
+		try
+		{
+			String sql = "SELECT * FROM batches WHERE projectID = " + Integer.toString(projectID);
+			stmt = db.getConnection().prepareStatement(sql);
+			rs = stmt.executeQuery();
+			while(rs.next())
+			{
+				Batch batch = new Batch();
+				batch.setBatchID(rs.getInt(1));
+				batch.setProjectID(rs.getInt(2));
+				batch.setFile(rs.getString(3));
+				batch.setCompleted(rs.getBoolean(4));
+				batch.setUserID(rs.getInt(5));
+				batchList.add(batch);
+			}
+		}
+		catch(SQLException e)
+		{
+			throw new DatabaseException();
+		}
+		return batchList;
 	}
 	/**
 	 * Searches the database for a batch that matches the desired ID
@@ -52,7 +100,7 @@ public class BatchesDAO
 		Batch batch = new Batch();
 		try
 		{
-			String sql = "select * from batches where batchID = ?";
+			String sql = "SELECT * FROM batches WHERE batchID = " + Integer.toString(batchID);
 			stmt = db.getConnection().prepareStatement(sql);
 			rs = stmt.executeQuery();
 			while(rs.next())
@@ -73,10 +121,24 @@ public class BatchesDAO
 	/**
 	 * Adds batch to the database
 	 * @param batch
+	 * @throws DatabaseException 
 	 */
-	public void add(Batch batch)
+	public void add(Batch batch) throws DatabaseException
 	{
-		
+		PreparedStatement stmt = null;
+		try
+		{
+			String sql = "INSERT INTO batches (projectID, file, completed, userID) VALUES (?, ?, ?, ?)";
+			stmt = db.getConnection().prepareStatement(sql);
+			stmt.setInt(1, batch.getProjectID());
+			stmt.setString(2, batch.getFile());
+			stmt.setBoolean(3, batch.getCompleted());
+			stmt.setInt(4, batch.getUserID());
+		}
+		catch(SQLException e)
+		{
+			throw new DatabaseException();
+		}
 	}
 	/**
 	 * finds the batch in the database, and replaces it's previous data with the current data

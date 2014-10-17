@@ -76,7 +76,7 @@ public class Batch
 	/**
 	 * @return the completed
 	 */
-	public boolean isCompleted() {
+	public boolean getCompleted() {
 		return completed;
 	}
 	/**
