@@ -131,12 +131,11 @@ public class BatchesDAO
 		int batchID;
 		try
 		{
-			String sql = "INSERT INTO batches (projectID, file, completed, userID) VALUES (?, ?, ?, ?)";
+			String sql = "INSERT INTO batches (projectID, file, completed) VALUES (?, ?, ?)";
 			stmt = db.getConnection().prepareStatement(sql);
 			stmt.setInt(1, batch.getProjectID());
 			stmt.setString(2, batch.getFile());
 			stmt.setBoolean(3, batch.getCompleted());
-			stmt.setInt(4, batch.getUserID());
 			if (stmt.executeUpdate() == 1) 
 			{
 				keyStmt = db.getConnection().createStatement();
