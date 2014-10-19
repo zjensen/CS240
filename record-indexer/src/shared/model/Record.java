@@ -29,7 +29,6 @@ public class Record
 	   */
 	public Record(int recordID, int batchID, int projectID, int row) 
 	{
-		super();
 		this.recordID = recordID;
 		this.batchID = batchID;
 		this.projectID = projectID;

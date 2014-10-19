@@ -26,24 +26,6 @@ public class Value
 		this.data = null;
 	}
 	 /**
-	   * Initializes the Value if no ID has been delegated
-	   * @param recordID - record the value comes from(row)
-	   * @param fieldID - field the value is associated with(column)
-	   * @param batchID - image the value comes from
-	   * @param projectID - project the value is associated with
-	   * @param data - actual text or 'Value'
-	   */
-	public Value(int recordID, int fieldID, int batchID, int projectID, String data) 
-	{
-		super();
-		this.valueID = -1;
-		this.recordID = recordID;
-		this.fieldID = fieldID;
-		this.batchID = batchID;
-		this.projectID = projectID;
-		this.data = data;
-	}
-	 /**
 	   * Initializes the Value if ALL information is available
 	   * @param valueID - unique identifier of the value
 	   * @param recordID - record the value comes from(row)
@@ -54,7 +36,6 @@ public class Value
 	   */
 	public Value(int valueID, int recordID, int fieldID, int batchID, int projectID, String data) 
 	{
-		super();
 		this.valueID = valueID;
 		this.recordID = recordID;
 		this.fieldID = fieldID;

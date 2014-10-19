@@ -14,7 +14,7 @@ public class User
 	private String lastName;
 	private String email;
 	private int indexedRecords;
-	private Batch currentBatch;
+	private int batchID; //current batch
 	
 	 /**
 	   * Initializes the user with no data
@@ -28,7 +28,7 @@ public class User
 		lastName = null;
 		email = null;
 		indexedRecords = 0;
-		currentBatch = null;
+		batchID = -1;
 	}
 	 /**
 	   * Initializes the user if ALL information is available
@@ -41,7 +41,7 @@ public class User
 	   * @param indexedRecords - number of records indexed by user
 	   * @param currentBatch - current image user is working on
 	   */
-	public User(int userID, String username, String password, String firstName,String lastName, String email, int indexedRecords,Batch currentBatch) 
+	public User(int userID, String username, String password, String firstName,String lastName, String email, int indexedRecords,int batchID) 
 	{
 		super();
 		this.userID = userID;
@@ -51,7 +51,7 @@ public class User
 		this.lastName = lastName;
 		this.email = email;
 		this.indexedRecords = indexedRecords;
-		this.currentBatch = currentBatch;
+		this.batchID = batchID;
 	}
 
 	/**
@@ -155,16 +155,16 @@ public class User
 	/**
 	 * @return the currentBatch
 	 */
-	public Batch getCurrentBatch() 
+	public int getBatchID() 
 	{
-		return currentBatch;
+		return batchID;
 	}
 	/**
 	 * @param currentBatch the currentBatch to set
 	 */
-	public void setCurrentBatch(Batch currentBatch) 
+	public void setBatchID(int batchID) 
 	{
-		this.currentBatch = currentBatch;
+		this.batchID = batchID;
 	}
 	
 }

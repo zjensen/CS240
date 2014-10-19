@@ -1,14 +1,10 @@
 package server.dba;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 
 import server.DatabaseException;
 import shared.model.Field;
-import shared.model.Project;
 /**
  * Database access object for fields
  * @author zsjensen
@@ -29,29 +25,107 @@ public class FieldsDAO
 	/**
 	 * gets all fields in the database
 	 * @return an Array List containing all fields in the database
+	 * @throws DatabaseException 
 	 */
-	public ArrayList<Field> getAll()
+	public ArrayList<Field> getAll() throws DatabaseException
 	{
-		return null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		ArrayList<Field> fieldList = new ArrayList<Field>();
+		try
+		{
+			String sql = "SELECT * FROM fields";
+			stmt = db.getConnection().prepareStatement(sql);
+			rs = stmt.executeQuery();
+			while(rs.next())
+			{
+				Field field = new Field();
+				field.setFieldID(rs.getInt(1));
+				field.setProjectID(rs.getInt(2));
+				field.setTitle(rs.getString(3));
+				field.setXCoord(rs.getInt(4));
+				field.setWidth(rs.getInt(5));
+				field.setHelpHTML(rs.getString(6));
+				field.setKnownData(rs.getString(7));
+				field.setColumn(rs.getInt(8));
+				fieldList.add(field);
+			}
+		}
+		catch(SQLException e)
+		{
+			throw new DatabaseException();
+		}
+		return fieldList;
 	}
 	/**
 	 * gets all fields in the specified project
 	 * @return an Array List containing all fields in the project
 	 * @param projectID - project you want to find fields for
+	 * @throws DatabaseException 
 	 */
-	public ArrayList<Field> getAll(int projectID)
+	public ArrayList<Field> getAll(int projectID) throws DatabaseException
 	{
-		return null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		ArrayList<Field> fieldList = new ArrayList<Field>();
+		try
+		{
+			String sql = "SELECT * FROM fields WHERE projectID = " + Integer.toString(projectID);
+			stmt = db.getConnection().prepareStatement(sql);
+			rs = stmt.executeQuery();
+			while(rs.next())
+			{
+				Field field = new Field();
+				field.setFieldID(rs.getInt(1));
+				field.setProjectID(rs.getInt(2));
+				field.setTitle(rs.getString(3));
+				field.setXCoord(rs.getInt(4));
+				field.setWidth(rs.getInt(5));
+				field.setHelpHTML(rs.getString(6));
+				field.setKnownData(rs.getString(7));
+				field.setColumn(rs.getInt(8));
+				fieldList.add(field);
+			}
+		}
+		catch(SQLException e)
+		{
+			throw new DatabaseException();
+		}
+		return fieldList;
 	}
 	/**
 	 * Searches the database for a field that matches the desired ID
 	 * @param fieldID - the ID of the field you want
 	 * @return field = the field belonging to the ID
+	 * @throws DatabaseException 
 	 */
-	public Field get(int fieldID)
+	public Field get(int fieldID) throws DatabaseException
 	{
-		
-		return null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		Field field = new Field();
+		try
+		{
+			String sql = "SELECT * FROM fields WHERE fieldID = " + Integer.toString(fieldID);
+			stmt = db.getConnection().prepareStatement(sql);
+			rs = stmt.executeQuery();
+			while(rs.next())
+			{
+				field.setFieldID(rs.getInt(1));
+				field.setProjectID(rs.getInt(2));
+				field.setTitle(rs.getString(3));
+				field.setXCoord(rs.getInt(4));
+				field.setWidth(rs.getInt(5));
+				field.setHelpHTML(rs.getString(6));
+				field.setKnownData(rs.getString(7));
+				field.setColumn(rs.getInt(8));
+			}
+		}
+		catch(SQLException e)
+		{
+			throw new DatabaseException();
+		}
+		return field;
 	}
 	/**
 	 * Adds field to the database
@@ -66,7 +140,7 @@ public class FieldsDAO
 		int fieldID;
 		try
 		{
-			String sql = "INSERT INTO projects (projectID, title, xCoord, width, helpHTML, knownData, column) VALUES (?,?,?,?,?,?,?)";
+			String sql = "INSERT INTO fields (projectID, title, xCoord, width, helpHTML, knownData, column) VALUES (?,?,?,?,?,?,?)";
 			
 			stmt = db.getConnection().prepareStatement(sql);
 			stmt.setInt(1,field.getProjectID());
@@ -99,6 +173,8 @@ public class FieldsDAO
 				try
 				{
 					stmt.close();
+					keyStmt.close();
+					keyRS.close();
 				}
 				catch(SQLException e)
 				{
@@ -111,17 +187,92 @@ public class FieldsDAO
 	/**
 	 * finds the field in the database, and replaces it's previous data with the current data
 	 * @param field
+	 * @throws DatabaseException 
 	 */
-	public void update(Field field)
+	public void update(Field field) throws DatabaseException
 	{
-		
+		PreparedStatement stmt = null;
+		try
+		{
+			String sql = 	"UPDATE fields " + 
+							"set projectID = ?, column = ?, title = ?, xCoord = ?, " + 
+							"width = ?, helpHTML = ?, knownData = ? " +
+							"WHERE fieldID = ?";
+			stmt = db.getConnection().prepareStatement(sql);
+			stmt.setInt(1, field.getProjectID());
+			stmt.setInt(2, field.getColumn());
+			stmt.setString(3, field.getTitle());
+			stmt.setInt(4, field.getXCoord());
+			stmt.setInt(5, field.getWidth());
+			stmt.setString(6, field.getHelpHTML());
+			stmt.setString(7, field.getKnownData());
+			stmt.setInt(8, field.getFieldID());
+			if (stmt.executeUpdate() == 1) 
+			{
+				//works
+			} 
+			else
+			{
+				throw new DatabaseException();
+			}
+		}
+		catch(SQLException e)
+		{
+			throw new DatabaseException();
+		}
+		finally
+		{
+			if(stmt != null)
+			{
+				try
+				{
+					stmt.close();
+				}
+				catch(SQLException e)
+				{
+					throw new DatabaseException();
+				}
+			}
+		}
 	}
 	/**
 	 * removes a field from the database
 	 * @param field
+	 * @throws DatabaseException 
 	 */
-	public void delete(Field field)
+	public void delete(Field field) throws DatabaseException
 	{
-		
+		PreparedStatement stmt = null;
+		try
+		{
+			String sql = "DELETE FROM fields WHERE fieldID = " + Integer.toString(field.getFieldID());
+			stmt = db.getConnection().prepareStatement(sql);
+			if (stmt.executeUpdate() == 1) 
+			{
+				//It worked!
+			} 
+			else
+			{
+				throw new DatabaseException();
+			}
+		}
+		catch(SQLException e)
+		{
+			throw new DatabaseException();
+		}
+		finally
+		{
+			if(stmt != null)
+			{
+				try
+				{
+					stmt.close();
+				}
+				catch(SQLException e)
+				{
+					throw new DatabaseException();
+				}
+			}
+		}
 	}
 }

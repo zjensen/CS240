@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import server.DatabaseException;
 import shared.model.Batch;
-import shared.model.Project;
 /**
  * Database Access Object for batches
  * @author zsjensen
@@ -121,11 +120,15 @@ public class BatchesDAO
 	/**
 	 * Adds batch to the database
 	 * @param batch
+	 * @returns id of batch just added to db
 	 * @throws DatabaseException 
 	 */
-	public void add(Batch batch) throws DatabaseException
+	public int add(Batch batch) throws DatabaseException
 	{
 		PreparedStatement stmt = null;
+		Statement keyStmt = null; 
+		ResultSet keyRS = null;
+		int batchID;
 		try
 		{
 			String sql = "INSERT INTO batches (projectID, file, completed, userID) VALUES (?, ?, ?, ?)";
@@ -134,26 +137,125 @@ public class BatchesDAO
 			stmt.setString(2, batch.getFile());
 			stmt.setBoolean(3, batch.getCompleted());
 			stmt.setInt(4, batch.getUserID());
+			if (stmt.executeUpdate() == 1) 
+			{
+				keyStmt = db.getConnection().createStatement();
+				keyRS = keyStmt.executeQuery("select last_insert_rowid()"); 
+				keyRS.next();
+				batchID = keyRS.getInt(1);
+			} 
+			else
+			{
+				throw new DatabaseException();
+			}
 		}
 		catch(SQLException e)
 		{
 			throw new DatabaseException();
 		}
+		finally
+		{
+			if(stmt != null)
+			{
+				try
+				{
+					stmt.close();
+					keyStmt.close();
+					keyRS.close();
+				}
+				catch(SQLException e)
+				{
+					throw new DatabaseException();
+				}
+			}
+		}
+		return batchID;
 	}
 	/**
 	 * finds the batch in the database, and replaces it's previous data with the current data
 	 * @param batch
+	 * @throws DatabaseException 
 	 */
-	public void update(Batch batch)
+	public void update(Batch batch) throws DatabaseException
 	{
-		
+		PreparedStatement stmt = null;
+		try
+		{
+			String sql = 	"UPDATE batches " + 
+							"set projectID = ?, userID = ?, completed = ?, file = ? " + 
+							"WHERE batchID = ?";
+			stmt = db.getConnection().prepareStatement(sql);
+			stmt.setInt(1, batch.getProjectID());
+			stmt.setString(2, batch.getFile());
+			stmt.setBoolean(3, batch.getCompleted());
+			stmt.setInt(4, batch.getUserID());
+			stmt.setInt(5, batch.getBatchID());
+			if (stmt.executeUpdate() == 1) 
+			{
+				//works
+			} 
+			else
+			{
+				throw new DatabaseException();
+			}
+		}
+		catch(SQLException e)
+		{
+			throw new DatabaseException();
+		}
+		finally
+		{
+			if(stmt != null)
+			{
+				try
+				{
+					stmt.close();
+				}
+				catch(SQLException e)
+				{
+					throw new DatabaseException();
+				}
+			}
+		}
 	}
 	/**
 	 * removes a batch from the database
 	 * @param batch
+	 * @throws DatabaseException 
 	 */
-	public void delete(Batch batch)
+	public void delete(Batch batch) throws DatabaseException
 	{
-		
+		PreparedStatement stmt = null;
+		try
+		{
+			String sql = "DELETE FROM batch WHERE batchID = " + Integer.toString(batch.getBatchID());
+			stmt = db.getConnection().prepareStatement(sql);
+			if (stmt.executeUpdate() == 1) 
+			{
+				//It worked!
+			} 
+			else
+			{
+				throw new DatabaseException();
+			}
+		}
+		catch(SQLException e)
+		{
+			throw new DatabaseException();
+		}
+		finally
+		{
+			if(stmt != null)
+			{
+				try
+				{
+					stmt.close();
+				}
+				catch(SQLException e)
+				{
+					throw new DatabaseException();
+				}
+			}
+		}
 	}
 }
