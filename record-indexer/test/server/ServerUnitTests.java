@@ -28,11 +28,11 @@ public class ServerUnitTests
 
 	public static void main(String[] args) 
 	{
-		System.out.println("here");
 		String[] testClasses = new String[] 
 		{
 			"server.ServerUnitTests",
-			"test/server.dba.BatchesDAOTest"
+			"server.dba.ProjectsDAOTest",
+			"server.dbs.BatchesDAOTest"
 		};
 
 		org.junit.runner.JUnitCore.main(testClasses);

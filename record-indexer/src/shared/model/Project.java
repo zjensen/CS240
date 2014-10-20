@@ -42,6 +42,47 @@ public class Project
 		this.recordHeight = recordHeight;
 	}
 	
+	/** (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + firstYCoord;
+		result = prime * result + projectID;
+		result = prime * result + recordHeight;
+		result = prime * result + recordsPerImage;
+		result = prime * result + ((title == null) ? 0 : title.hashCode());
+		return result;
+	}
+	/** (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Project other = (Project) obj;
+		if (firstYCoord != other.firstYCoord)
+			return false;
+		if (projectID != other.projectID)
+			return false;
+		if (recordHeight != other.recordHeight)
+			return false;
+		if (recordsPerImage != other.recordsPerImage)
+			return false;
+		if (title == null) {
+			if (other.title != null)
+				return false;
+		} else if (!title.equals(other.title))
+			return false;
+		return true;
+	}
 	// ------------------------------------------------------------------------------------
 	// GETTERS AND SETTERS - PUBLIC ACCESS
 	// ------------------------------------------------------------------------------------

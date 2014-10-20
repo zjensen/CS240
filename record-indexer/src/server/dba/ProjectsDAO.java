@@ -118,6 +118,7 @@ public class ProjectsDAO
 		}
 		catch(SQLException e)
 		{
+			//System.out.println( e.getClass().getName() + ": " + e.getMessage() );
 			throw new DatabaseException();
 		}
 		finally

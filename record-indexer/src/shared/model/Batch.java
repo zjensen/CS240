@@ -6,9 +6,11 @@ public class Batch
 	private int batchID;//key
 	
 	private int projectID;
-	private int userID;
-	private boolean completed;
+	
 	private String file;
+	
+	private boolean completed;
+	private int userID;
 	
 	/**
 	 * Constructs batch with no information
@@ -37,6 +39,48 @@ public class Batch
 		this.completed = completed;
 		this.file = file;
 	}
+	/**
+	 * 
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + batchID;
+		result = prime * result + (completed ? 1231 : 1237);
+		result = prime * result + ((file == null) ? 0 : file.hashCode());
+		result = prime * result + projectID;
+		result = prime * result + userID;
+		return result;
+	}
+	/**
+	 * 
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Batch other = (Batch) obj;
+		if (batchID != other.batchID)
+			return false;
+		if (completed != other.completed)
+			return false;
+		if (file == null) {
+			if (other.file != null)
+				return false;
+		} else if (!file.equals(other.file))
+			return false;
+		if (projectID != other.projectID)
+			return false;
+		if (userID != other.userID)
+			return false;
+		return true;
+	}
+	
 	/**
 	 * @return the batchID
 	 */

@@ -144,7 +144,7 @@ public class ValuesDAO
 		int valueID;
 		try
 		{
-			String sql = "INSERT INTO values (recordID, fieldID, batchID, projectID, data) VALUES (?, ?, ?, ?, ?)";
+			String sql = "INSERT INTO \"values\" (recordID, fieldID, batchID, projectID, data) VALUES (?, ?, ?, ?, ?)";
 			stmt = db.getConnection().prepareStatement(sql);
 			stmt.setInt(1, value.getRecordID());
 			stmt.setInt(2, value.getFieldID());

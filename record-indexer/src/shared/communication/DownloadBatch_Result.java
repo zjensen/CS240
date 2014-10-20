@@ -58,7 +58,7 @@ public class DownloadBatch_Result
 				sb.append(Integer.toString(f.getColumn())+"\n");
 				sb.append(f.getTitle()+"\n");
 				sb.append(f.getHelpHTML()+"\n");
-				sb.append(Integer.toString(f.getxCoord())+"\n");
+				sb.append(Integer.toString(f.getXCoord())+"\n");
 				sb.append(Integer.toString(f.getWidth())+"\n");
 				if(f.getKnownData()!=null)
 				{

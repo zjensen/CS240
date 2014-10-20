@@ -2,8 +2,7 @@ package importer;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -18,6 +17,7 @@ import org.xml.sax.SAXException;
 import server.DatabaseException;
 import server.dba.Database;
 import shared.model.*;
+import org.apache.commons.io.*;
 
 public class DataImporter 
 {	
@@ -26,7 +26,6 @@ public class DataImporter
 	{
 		database = new Database();
 		database.initialize();
-		
 	}
 
 	/**
@@ -40,12 +39,13 @@ public class DataImporter
 	public static void main(String[] args) throws DatabaseException, IOException, ParserConfigurationException, SAXException 
 	{
 		DataImporter importer = new DataImporter();
-		File emptyDB = new File("database/empty_indexer_server");
-		File fullDB = new File("database/indexer_server");
+		File emptyDB = new File("database"+File.separator+"empty_indexer_server.sqlite");
+		File fullDB = new File("database"+File.separator+"indexer_server.sqlite");
 		Files.copy(emptyDB.toPath(), fullDB.toPath(), StandardCopyOption.REPLACE_EXISTING); //replace full db with empty one to start fresh
 		File toImport = new File(args[0]); //xml file
 		File recordsFile = new File("records");
-		Files.copy(toImport.toPath(), recordsFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		FileUtils.copyDirectory(toImport.getParentFile(), recordsFile);
+		//Files.copy(toImport.getParentFile().toPath(), recordsFile.toPath(), StandardCopyOption.REPLACE_EXISTING); //add path
 		importer = new DataImporter();
 		importer.parseUsers(toImport);
 		importer.parseProjects(toImport);
@@ -128,7 +128,7 @@ public class DataImporter
 			}
 			catch(DatabaseException e)
 			{
-				database.endTransaction(true);
+				database.endTransaction(false);
 				throw new DatabaseException();
 			}
 		}
@@ -163,7 +163,7 @@ public class DataImporter
 			}
 			catch(DatabaseException e)
 			{
-				database.endTransaction(true);
+				database.endTransaction(false);
 				throw new DatabaseException();
 			}
 			parseValues(values_Element,projectID,batchID,recordID,fieldIDs);
@@ -191,18 +191,19 @@ public class DataImporter
 			Batch b = new Batch();
 			int batchID = -1;
 			b.setProjectID(projectID);
-			b.setFile(file_Element.getTextContent());
-			
-			NodeList records = records_Element.getElementsByTagName("record");
-			if(records.getLength() == recordsPerImage)
+			b.setFile("records"+File.pathSeparator+file_Element.getTextContent());
+			if(records_Element != null)
 			{
-				b.setCompleted(true);
+				NodeList records = records_Element.getElementsByTagName("record");
+				if(records.getLength() == recordsPerImage)
+				{
+					b.setCompleted(true);
+				}
+				else
+				{
+					b.setCompleted(false);
+				}
 			}
-			else
-			{
-				b.setCompleted(false);
-			}
-			
 			database.startTransaction();
 			try
 			{
@@ -211,7 +212,7 @@ public class DataImporter
 			}
 			catch(DatabaseException e)
 			{
-				database.endTransaction(true);
+				database.endTransaction(false);
 				throw new DatabaseException();
 			}
 			
@@ -249,10 +250,10 @@ public class DataImporter
 			f.setTitle(title_Element.getTextContent());
 			f.setXCoord(Integer.valueOf(xCoord_Element.getTextContent()));
 			f.setWidth(Integer.valueOf(width_Element.getTextContent()));
-			f.setHelpHTML(helpHTML_Element.getTextContent());
+			f.setHelpHTML("records"+File.pathSeparator+helpHTML_Element.getTextContent());
 			if(knownData_Element != null) //optional filepath
 			{
-				f.setKnownData(knownData_Element.getTextContent());
+				f.setKnownData("records"+File.pathSeparator+knownData_Element.getTextContent());
 			}
 			f.setColumn(i);
 			
@@ -264,7 +265,7 @@ public class DataImporter
 			}
 			catch(DatabaseException e)
 			{
-				database.endTransaction(true);
+				database.endTransaction(false);
 				throw new DatabaseException();
 			}
 			fieldIDs.add(fieldID);
@@ -313,7 +314,7 @@ public class DataImporter
 			}
 			catch(DatabaseException e)
 			{
-				database.endTransaction(true);
+				database.endTransaction(false);
 				throw new DatabaseException();
 			}
 		}
