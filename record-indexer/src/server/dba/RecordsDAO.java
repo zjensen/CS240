@@ -115,7 +115,7 @@ public class RecordsDAO
 		int recordID;
 		try
 		{
-			String sql = "INSERT INTO records (batchID, projectID, row) VALUES (?,?,?)";
+			String sql = "INSERT INTO records (batchID, projectID, \"row\") VALUES (?,?,?)";
 			
 			stmt = db.getConnection().prepareStatement(sql);
 			stmt.setInt(1,record.getBatchID());
@@ -166,7 +166,7 @@ public class RecordsDAO
 		try
 		{
 			String sql = 	"UPDATE records " + 
-							"set batchID = ?, projectID = ?, row = ? " + 
+							"set batchID = ?, projectID = ?, \"row\" = ? " + 
 							"WHERE recordID = ?";
 			stmt = db.getConnection().prepareStatement(sql);
 			stmt.setInt(1, record.getBatchID());

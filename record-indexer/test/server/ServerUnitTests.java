@@ -1,7 +1,6 @@
 package server;
 
 import org.junit.* ;
-import static org.junit.Assert.* ;
 
 public class ServerUnitTests 
 {
@@ -21,9 +20,9 @@ public class ServerUnitTests
 	@Test
 	public void test_1() 
 	{
-		assertEquals("OK", "OK");
-		assertTrue(true);
-		assertFalse(false);
+		//assertEquals("OK", "OK");
+		//assertTrue(true);
+		//assertFalse(false);
 	}
 
 	public static void main(String[] args) 
@@ -31,8 +30,12 @@ public class ServerUnitTests
 		String[] testClasses = new String[] 
 		{
 			"server.ServerUnitTests",
-			"server.dba.ProjectsDAOTest",
-			"server.dbs.BatchesDAOTest"
+			"server.dba.ProjectsDAO_Test",
+			"server.dba.BatchesDAO_Test",
+			"server.dba.FieldsDAO_Test",
+			"server.dba.RecordsDAO_Test",
+			"server.dba.ValuesDAO_Test",
+			"server.dba.UsersDAO_Test"
 		};
 
 		org.junit.runner.JUnitCore.main(testClasses);

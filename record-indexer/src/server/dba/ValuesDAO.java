@@ -78,7 +78,7 @@ public class ValuesDAO
 		ArrayList<Value> valueList = new ArrayList<Value>();
 		try
 		{
-			String sql = "SELECT * FROM values";
+			String sql = "SELECT * FROM \"values\"";
 			stmt = db.getConnection().prepareStatement(sql);
 			rs = stmt.executeQuery();
 			while(rs.next())
@@ -112,7 +112,7 @@ public class ValuesDAO
 		Value value = new Value();
 		try
 		{
-			String sql = "SELECT * FROM values WHERE valueID = " + Integer.toString(valueID);
+			String sql = "SELECT * FROM \"values\" WHERE valueID = " + Integer.toString(valueID);
 			stmt = db.getConnection().prepareStatement(sql);
 			rs = stmt.executeQuery();
 			while(rs.next())
@@ -195,8 +195,8 @@ public class ValuesDAO
 		PreparedStatement stmt = null;
 		try
 		{	
-			String sql = 	"UPDATE values" + 
-							"set recordID = ? fieldID = ?, batchID = ?, projectID = ?, data = ? " +
+			String sql = 	"UPDATE \"values\"" + 
+							"set recordID = ?, fieldID = ?, batchID = ?, projectID = ?, data = ? " +
 							"WHERE valueID = ?";
 			stmt = db.getConnection().prepareStatement(sql);
 			stmt.setInt(1, value.getRecordID());
@@ -243,7 +243,7 @@ public class ValuesDAO
 		PreparedStatement stmt = null;
 		try
 		{
-			String sql = "DELETE FROM values WHERE valueID = " + Integer.toString(value.getValueID());
+			String sql = "DELETE FROM \"values\" WHERE valueID = " + Integer.toString(value.getValueID());
 			stmt = db.getConnection().prepareStatement(sql);
 			if (stmt.executeUpdate() == 1) 
 			{

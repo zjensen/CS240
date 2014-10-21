@@ -182,7 +182,7 @@ public class BatchesDAO
 		try
 		{
 			String sql = 	"UPDATE batches " + 
-							"set projectID = ?, userID = ?, completed = ?, file = ? " + 
+							"set projectID = ?, file = ?, completed = ?, userID = ? " + 
 							"WHERE batchID = ?";
 			stmt = db.getConnection().prepareStatement(sql);
 			stmt.setInt(1, batch.getProjectID());
@@ -228,7 +228,7 @@ public class BatchesDAO
 		PreparedStatement stmt = null;
 		try
 		{
-			String sql = "DELETE FROM batch WHERE batchID = " + Integer.toString(batch.getBatchID());
+			String sql = "DELETE FROM batches WHERE batchID = " + Integer.toString(batch.getBatchID());
 			stmt = db.getConnection().prepareStatement(sql);
 			if (stmt.executeUpdate() == 1) 
 			{
@@ -241,6 +241,7 @@ public class BatchesDAO
 		}
 		catch(SQLException e)
 		{
+			//System.out.println( e.getClass().getName() + ": " + e.getMessage() );
 			throw new DatabaseException();
 		}
 		finally

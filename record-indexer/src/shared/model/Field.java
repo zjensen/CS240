@@ -49,6 +49,64 @@ public class Field
 		this.helpHTML = helpHTML;
 		this.knownData = knownData;
 	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + column;
+		result = prime * result + fieldID;
+		result = prime * result
+				+ ((helpHTML == null) ? 0 : helpHTML.hashCode());
+		result = prime * result
+				+ ((knownData == null) ? 0 : knownData.hashCode());
+		result = prime * result + projectID;
+		result = prime * result + ((title == null) ? 0 : title.hashCode());
+		result = prime * result + width;
+		result = prime * result + xCoord;
+		return result;
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Field other = (Field) obj;
+		if (column != other.column)
+			return false;
+		if (fieldID != other.fieldID)
+			return false;
+		if (helpHTML == null) {
+			if (other.helpHTML != null)
+				return false;
+		} else if (!helpHTML.equals(other.helpHTML))
+			return false;
+		if (knownData == null) {
+			if (other.knownData != null)
+				return false;
+		} else if (!knownData.equals(other.knownData))
+			return false;
+		if (projectID != other.projectID)
+			return false;
+		if (title == null) {
+			if (other.title != null)
+				return false;
+		} else if (!title.equals(other.title))
+			return false;
+		if (width != other.width)
+			return false;
+		if (xCoord != other.xCoord)
+			return false;
+		return true;
+	}
 	/**
 	 * @return the fieldID
 	 */

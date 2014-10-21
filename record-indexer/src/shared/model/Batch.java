@@ -31,7 +31,7 @@ public class Batch
 	   * @param completed - is batch completed?
 	   * @param file - file address of image
 	   */
-	public Batch(int batchID, int projectID, int userID,boolean completed, String file) 
+	public Batch(int batchID, int projectID, String file, boolean completed, int userID) 
 	{
 		this.batchID = batchID;
 		this.projectID = projectID;

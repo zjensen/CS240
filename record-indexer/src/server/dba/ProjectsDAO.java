@@ -150,7 +150,7 @@ public class ProjectsDAO
 		try
 		{
 			String sql = 	"UPDATE projects " + 
-							"set title = ?, recordsPerImage = ?, firstYCoord = ?, recordHeight = ?, " + 
+							"set title = ?, recordsPerImage = ?, firstYCoord = ?, recordHeight = ? " + 
 							"WHERE projectID = ?";
 			stmt = db.getConnection().prepareStatement(sql);
 			stmt.setString(1, project.getTitle());

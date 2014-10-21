@@ -99,7 +99,7 @@ public class UsersDAO
 		int userID;
 		try
 		{
-			String sql = "INSERT INTO users (username, password, firstName, lastName, email, indexedRecords) VALUES (?, ?, ?, ?, ?, ?)";
+			String sql = "INSERT INTO users (username, password, firstName, lastName, email, indexedRecords, batchID) VALUES (?, ?, ?, ?, ?, ?, ?)";
 			stmt = db.getConnection().prepareStatement(sql);
 			stmt.setString(1, user.getUsername());
 			stmt.setString(2, user.getPassword());
@@ -107,6 +107,7 @@ public class UsersDAO
 			stmt.setString(4, user.getLastName());
 			stmt.setString(5, user.getEmail());
 			stmt.setInt(6, user.getIndexedRecords());
+			stmt.setInt(7, user.getBatchID());
 			if (stmt.executeUpdate() == 1) 
 			{
 				keyStmt = db.getConnection().createStatement();
@@ -142,7 +143,7 @@ public class UsersDAO
 		return userID;
 	}
 	/**
-	 * finds the user in the database, and replaces his previoud data with the current data
+	 * finds the user in the database, and replaces his previous data with the current data
 	 * @param user
 	 * @throws DatabaseException 
 	 */
@@ -152,7 +153,7 @@ public class UsersDAO
 		try
 		{
 			String sql = 	"UPDATE users " +
-							"username = ?, password = ?, firstName = ?, " + 
+							"set username = ?, password = ?, firstName = ?, " + 
 							"lastName = ?, email = ?, indexedRecords = ?, batchID = ? " +
 							"WHERE userID = ?";
 			stmt = db.getConnection().prepareStatement(sql);
@@ -175,6 +176,7 @@ public class UsersDAO
 		}
 		catch(SQLException e)
 		{
+			//System.out.println( e.getClass().getName() + ": " + e.getMessage() );
 			throw new DatabaseException();
 		}
 		finally

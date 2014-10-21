@@ -140,7 +140,7 @@ public class FieldsDAO
 		int fieldID;
 		try
 		{
-			String sql = "INSERT INTO fields (projectID, title, xCoord, width, helpHTML, knownData, column) VALUES (?,?,?,?,?,?,?)";
+			String sql = "INSERT INTO fields (projectID, title, xCoord, width, helpHTML, knownData, \"column\") VALUES (?,?,?,?,?,?,?)";
 			
 			stmt = db.getConnection().prepareStatement(sql);
 			stmt.setInt(1,field.getProjectID());
@@ -164,6 +164,7 @@ public class FieldsDAO
 		}
 		catch(SQLException e)
 		{
+			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
 			throw new DatabaseException();
 		}
 		finally
@@ -195,17 +196,17 @@ public class FieldsDAO
 		try
 		{
 			String sql = 	"UPDATE fields " + 
-							"set projectID = ?, column = ?, title = ?, xCoord = ?, " + 
-							"width = ?, helpHTML = ?, knownData = ? " +
+							"set projectID = ?, title = ?, xCoord = ?, " + 
+							"width = ?, helpHTML = ?, knownData = ?, \"column\" = ? " +
 							"WHERE fieldID = ?";
 			stmt = db.getConnection().prepareStatement(sql);
 			stmt.setInt(1, field.getProjectID());
-			stmt.setInt(2, field.getColumn());
-			stmt.setString(3, field.getTitle());
-			stmt.setInt(4, field.getXCoord());
-			stmt.setInt(5, field.getWidth());
-			stmt.setString(6, field.getHelpHTML());
-			stmt.setString(7, field.getKnownData());
+			stmt.setString(2, field.getTitle());
+			stmt.setInt(3, field.getXCoord());
+			stmt.setInt(4, field.getWidth());
+			stmt.setString(5, field.getHelpHTML());
+			stmt.setString(6, field.getKnownData());
+			stmt.setInt(7, field.getColumn());
 			stmt.setInt(8, field.getFieldID());
 			if (stmt.executeUpdate() == 1) 
 			{
@@ -218,6 +219,7 @@ public class FieldsDAO
 		}
 		catch(SQLException e)
 		{
+			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
 			throw new DatabaseException();
 		}
 		finally
