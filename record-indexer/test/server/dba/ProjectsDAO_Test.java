@@ -19,8 +19,8 @@ public class ProjectsDAO_Test
 	@Before
 	public void setup() throws DatabaseException 
 	{
+		Database.initialize();
 		db = new Database();
-		db.initialize();
 		db.startTransaction();
 		pDAO = db.getProjectsDAO();
 		ArrayList<Project> projectList = pDAO.getAll();

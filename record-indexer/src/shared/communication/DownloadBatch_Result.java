@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 public class DownloadBatch_Result 
 {
+	private Batch batch;
+	private Project project;
 	private int batchID;
 	private int projectID;
 	private String imageURL;
@@ -35,7 +37,36 @@ public class DownloadBatch_Result
 		this.numFields = -1;
 		this.fields = null;
 	}
+	public DownloadBatch_Result(Batch batch, Project project, ArrayList<Field> fields)
+	{
+		this.batchID = batch.getBatchID();
+		this.projectID = project.getProjectID();
+		this.imageURL = batch.getFile();
+		this.firstYCoord = project.getFirstYCoord();
+		this.recordHeight = project.getRecordHeight();
+		this.numRecords = project.getRecordsPerImage();
+		this.numFields = fields.size();
+		this.fields = fields;
+	}
 	
+	public void updateURLs(String host, int port)
+	{
+		this.setImageURL("http://" + host + ":" + port +"/" + this.getImageURL());
+		ArrayList<Field> fields = this.getFields();
+		if(fields != null)
+		{
+			for(int i=0;i<fields.size();i++)
+			{
+				Field field = fields.get(i);
+				if(field.getKnownData() != null)
+				{
+					field.setKnownData("http://" + host + ":" + port +"/" + field.getKnownData());
+				}
+				field.setHelpHTML("http://" + host + ":" + port +"/" + field.getHelpHTML());
+			}
+		}
+		this.setFields(fields);
+	}
 	public String toString()
 	{
 		if(batchID == -1)
@@ -164,5 +195,29 @@ public class DownloadBatch_Result
 	 */
 	public void setFields(ArrayList<Field> fields) {
 		this.fields = fields;
+	}
+	/**
+	 * @return the batch
+	 */
+	public Batch getBatch() {
+		return batch;
+	}
+	/**
+	 * @param batch the batch to set
+	 */
+	public void setBatch(Batch batch) {
+		this.batch = batch;
+	}
+	/**
+	 * @return the project
+	 */
+	public Project getProject() {
+		return project;
+	}
+	/**
+	 * @param project the project to set
+	 */
+	public void setProject(Project project) {
+		this.project = project;
 	}
 }

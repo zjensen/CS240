@@ -1,18 +1,15 @@
 package shared.communication;
 
-import java.util.ArrayList;
-
-import shared.model.Record;
 
 public class SubmitBatch_Params extends User_Params 
 {
 	private int batchID;
-	private ArrayList<Record> records;
-	public SubmitBatch_Params(String username, String password,int batchID,ArrayList<Record> records) 
+	private String values;
+	public SubmitBatch_Params(String username, String password,String batchID,String values) 
 	{
 		super(username, password);
-		this.batchID=batchID;
-		this.records=records;
+		this.batchID=Integer.valueOf(batchID);
+		this.values=values;
 	}
 	/**
 	 * @return the batchID
@@ -29,14 +26,14 @@ public class SubmitBatch_Params extends User_Params
 	/**
 	 * @return the records
 	 */
-	public ArrayList<Record> getRecords() {
-		return records;
+	public String getValues() {
+		return values;
 	}
 	/**
 	 * @param records the records to set
 	 */
-	public void setRecords(ArrayList<Record> records) {
-		this.records = records;
+	public void setValues(String values) {
+		this.values = values;
 	}
 
 	

@@ -9,10 +9,10 @@ public class GetSampleImage_Params extends User_Params
 	 * @param password
 	 * @param projectID
 	 */
-	public GetSampleImage_Params(String username, String password,int projectID) 
+	public GetSampleImage_Params(String username, String password,String projectID) 
 	{
 		super(username, password);
-		this.projectID = projectID;
+		this.projectID = Integer.valueOf(projectID);
 	}
 
 	/**

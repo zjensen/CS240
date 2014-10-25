@@ -20,8 +20,8 @@ public class FieldsDAO_Test
 	@Before
 	public void setup() throws DatabaseException 
 	{
+		Database.initialize();
 		db = new Database();
-		db.initialize();
 		db.startTransaction();
 		fDAO = db.getFieldsDAO();
 		ArrayList<Field> fieldList = fDAO.getAll();

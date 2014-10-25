@@ -29,7 +29,7 @@
 	<property name="db-file" location="${database}/indexer_server.sqlite"/>
 	
 	<!-- Database file containing empty tables. -->
-	<property name="empty-db-file" location="${database}/indexer_server_empty.sqlite"/>
+	<property name="empty-db-file" location="${database}/empty_indexer_server.sqlite"/>
 	
 	<!-- File containing the report output by Checkstyle -->
 	<property name="checkstyle-report-file" location="checkstyle-report.txt"/>
@@ -100,7 +100,7 @@
 	<!-- If port number is omitted, run on default port. -->
 	<!-- EXAMPLE: ant server -->
 	<target name="server" depends="compile" description="run server on specified port">
-		<java classname="THE NAME OF YOUR SERVER CLASS GOES HERE" fork="yes">
+		<java classname="server.Server" fork="yes">
 			<classpath>
 				<path refid="all-classpath"/>
 			</classpath>

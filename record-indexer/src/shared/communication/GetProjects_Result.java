@@ -32,6 +32,7 @@ public class GetProjects_Result
 	@Override
 	public String toString()
 	{
+		System.out.println("toString breaking");
 		if(projects.isEmpty())
 		{
 			return "FAILED\n";

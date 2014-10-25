@@ -20,8 +20,8 @@ public class RecordsDAO_Test
 	@Before
 	public void setup() throws DatabaseException 
 	{
+		Database.initialize();
 		db = new Database();
-		db.initialize();
 		db.startTransaction();
 		rDAO = db.getRecordsDAO();
 		ArrayList<Record> recordList = rDAO.getAll();

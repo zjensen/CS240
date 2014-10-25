@@ -20,8 +20,8 @@ public class UsersDAO_Test
 	@Before
 	public void setup() throws DatabaseException 
 	{
+		Database.initialize();
 		db = new Database();
-		db.initialize();
 		db.startTransaction();
 		uDAO = db.getUsersDAO();
 		ArrayList<User> userList = uDAO.getAll();
@@ -88,7 +88,7 @@ public class UsersDAO_Test
 		uDAO.delete(u1);
 		uDAO.delete(u2);
 		ArrayList<User> userList = uDAO.getAll();
-		assertEquals(userList.size(), 2);
+		assertEquals(userList.size(), 0);
 	}
 	
 	@Test(expected=DatabaseException.class)

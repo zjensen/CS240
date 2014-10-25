@@ -7,11 +7,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 import server.DatabaseException;
-import shared.model.Batch;
-import shared.model.Field;
-import shared.model.Project;
-import shared.model.Record;
-import shared.model.Value;
+import shared.model.*;
 /**
  * Database access object for values
  * @author zsjensen
@@ -43,10 +39,35 @@ public class ValuesDAO
 	 * Searches for the specified field then returns its values
 	 * @param field - the field you are searching in
 	 * @return all values from that field
+	 * @throws DatabaseException 
 	 */
-	public ArrayList<Value> getAll(Field field)
+	public ArrayList<Value> getAllByFieldID(int fieldID) throws DatabaseException
 	{
-		return null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		ArrayList<Value> valueList = new ArrayList<Value>();
+		try
+		{
+			String sql = "SELECT * FROM \"values\" WHERE fieldID = " + Integer.toString(fieldID);
+			stmt = db.getConnection().prepareStatement(sql);
+			rs = stmt.executeQuery();
+			while(rs.next())
+			{
+				Value value = new Value();
+				value.setValueID(rs.getInt(1));
+				value.setRecordID(rs.getInt(2));
+				value.setFieldID(rs.getInt(3));
+				value.setBatchID(rs.getInt(4));
+				value.setProjectID(rs.getInt(5));
+				value.setData(rs.getString(6));
+				valueList.add(value);
+			}
+		}
+		catch(SQLException e)
+		{
+			throw new DatabaseException();
+		}
+		return valueList;
 	}
 	/**
 	 * Searches for the specified batch then returns its values
@@ -61,10 +82,35 @@ public class ValuesDAO
 	 * Searches for the specified record then returns its values
 	 * @param record - the record you are searching in
 	 * @return all values from that record
+	 * @throws DatabaseException 
 	 */
-	public ArrayList<Value> getAll(Record record)
+	public ArrayList<Value> getAll(Record record) throws DatabaseException
 	{
-		return null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		ArrayList<Value> valueList = new ArrayList<Value>();
+		try
+		{
+			String sql = "SELECT * FROM \"values\" WHERE recordID = " + Integer.toString(record.getRecordID());
+			stmt = db.getConnection().prepareStatement(sql);
+			rs = stmt.executeQuery();
+			while(rs.next())
+			{
+				Value value = new Value();
+				value.setValueID(rs.getInt(1));
+				value.setRecordID(rs.getInt(2));
+				value.setFieldID(rs.getInt(3));
+				value.setBatchID(rs.getInt(4));
+				value.setProjectID(rs.getInt(5));
+				value.setData(rs.getString(6));
+				valueList.add(value);
+			}
+		}
+		catch(SQLException e)
+		{
+			throw new DatabaseException();
+		}
+		return valueList;
 	}
 	/**
 	 * returns all values in the database

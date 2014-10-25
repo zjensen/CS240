@@ -67,10 +67,33 @@ public class RecordsDAO
 	 * gets all records belonging to a specific Batch
 	 * @param batch - image you want records for
 	 * @return an Array List containing all records for the batch
+	 * @throws DatabaseException 
 	 */
-	public ArrayList<Record> getAll(Batch batch)
+	public ArrayList<Record> getAll(Batch batch) throws DatabaseException
 	{
-		return null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		ArrayList<Record> recordList = new ArrayList<Record>();
+		try
+		{
+			String sql = "SELECT * FROM records WHERE batchID = " + Integer.toString(batch.getBatchID());
+			stmt = db.getConnection().prepareStatement(sql);
+			rs = stmt.executeQuery();
+			while(rs.next())
+			{
+				Record record = new Record();
+				record.setRecordID(rs.getInt(1));
+				record.setBatchID(rs.getInt(2));
+				record.setProjectID(rs.getInt(3));
+				record.setRow(rs.getInt(4));
+				recordList.add(record);
+			}
+		}
+		catch(SQLException e)
+		{
+			throw new DatabaseException();
+		}
+		return recordList;
 	}
 	/**
 	 * Searches the database for a record that matches the desired ID

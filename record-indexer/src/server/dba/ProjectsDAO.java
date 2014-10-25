@@ -2,6 +2,7 @@ package server.dba;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import server.DatabaseException;
 import shared.model.Project;
@@ -12,6 +13,7 @@ import shared.model.Project;
  */
 public class ProjectsDAO 
 {
+	Logger logger = Logger.getLogger("server"); 
 	private Database db;
 	/**
 	 * constructs object and sets database 

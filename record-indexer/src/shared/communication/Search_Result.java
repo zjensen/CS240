@@ -17,6 +17,17 @@ public class Search_Result
 	{
 		this.tuples = tuples;
 	}
+	
+	public void updateURLs(String host, int port)
+	{
+		ArrayList<Search_Result_Tuple> tuples = this.getTuples();
+		for(int i=0;i<tuples.size();i++)
+		{
+			Search_Result_Tuple t = tuples.get(i);
+			t.setImageURL("http://" + host + ":" + port +"/" + t.getImageURL());
+		}
+		this.setTuples(tuples);
+	}
 
 	/**
 	 * @return the tuples
@@ -37,7 +48,7 @@ public class Search_Result
 	 */
 	public String toString()
 	{
-		if(tuples == null)
+		if(tuples == null || tuples.isEmpty())
 		{
 			return "FAILED\n";
 		}

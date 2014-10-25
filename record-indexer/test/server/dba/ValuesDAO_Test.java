@@ -19,8 +19,8 @@ public class ValuesDAO_Test
 	@Before
 	public void setup() throws DatabaseException 
 	{
+		Database.initialize();
 		db = new Database();
-		db.initialize();
 		db.startTransaction();
 		vDAO = db.getValuesDAO();
 		ArrayList<Value> valueList = vDAO.getAll();

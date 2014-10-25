@@ -24,8 +24,8 @@ public class DataImporter
 	private Database database;
 	public DataImporter() throws DatabaseException
 	{
+		Database.initialize();
 		database = new Database();
-		database.initialize();
 	}
 
 	/**
@@ -110,20 +110,28 @@ public class DataImporter
 	public void parseValues(Element values_Element, int projectID, int batchID, int recordID, ArrayList<Integer> fieldIDs) throws DatabaseException
 	{
 		NodeList valueList = values_Element.getElementsByTagName("value");
-		
+		ArrayList<Value> values = new ArrayList<Value>();
+		database.startTransaction();
+		try
+		{
+			Record record = database.getRecordsDAO().get(recordID);
+			values = database.getValuesDAO().getAll(record);
+			database.endTransaction(true);
+		}
+		catch(DatabaseException e)
+		{
+			database.endTransaction(false);
+			throw new DatabaseException();
+		}
 		for(int i=0;i<valueList.getLength();i++)
 		{
 			Element value_Element = (Element)valueList.item(i);	
-			Value v = new Value();
-			v.setBatchID(batchID);
-			v.setFieldID(fieldIDs.get(i));
-			v.setProjectID(projectID);
-			v.setRecordID(recordID);
+			Value v = values.get(i);
 			v.setData(value_Element.getTextContent());
 			database.startTransaction();
 			try
 			{
-				database.getValuesDAO().add(v);
+				database.getValuesDAO().update(v);
 				database.endTransaction(true);
 			}
 			catch(DatabaseException e)
@@ -150,15 +158,12 @@ public class DataImporter
 		{
 			Element record_Element = (Element)recordList.item(i);	
 			Element values_Element = (Element)record_Element.getElementsByTagName("values").item(0);
-			Record r = new Record();
-			int recordID = -1;
-			r.setBatchID(batchID);
-			r.setProjectID(projectID);
-			r.setRow(i);
 			database.startTransaction();
+			ArrayList<Record> records = new ArrayList<Record>();
 			try
 			{
-				recordID = database.getRecordsDAO().add(r);
+				Batch batch = database.getBatchesDAO().get(batchID);
+				records= database.getRecordsDAO().getAll(batch);
 				database.endTransaction(true);
 			}
 			catch(DatabaseException e)
@@ -166,7 +171,10 @@ public class DataImporter
 				database.endTransaction(false);
 				throw new DatabaseException();
 			}
-			parseValues(values_Element,projectID,batchID,recordID,fieldIDs);
+			if(values_Element != null)
+			{
+				parseValues(values_Element,projectID,batchID,records.get(i).getRecordID(),fieldIDs);
+			}
 		}
 	}
 	
@@ -191,7 +199,7 @@ public class DataImporter
 			Batch b = new Batch();
 			int batchID = -1;
 			b.setProjectID(projectID);
-			b.setFile("records"+File.pathSeparator+file_Element.getTextContent());
+			b.setFile("records"+File.separator+file_Element.getTextContent());
 			if(records_Element != null)
 			{
 				NodeList records = records_Element.getElementsByTagName("record");
@@ -208,6 +216,16 @@ public class DataImporter
 			try
 			{
 				batchID = database.getBatchesDAO().add(b);
+				for(int j=0;j<recordsPerImage;j++)
+				{
+					Record r = new Record(-1,batchID,projectID,j);
+					int recordID = database.getRecordsDAO().add(r);
+					for(int k=0;k<fieldIDs.size();k++)
+					{
+						Value v = new Value(-1,recordID,fieldIDs.get(k),batchID,projectID,null); //creates empty values everywhere
+						database.getValuesDAO().add(v);
+					}
+				}
 				database.endTransaction(true);
 			}
 			catch(DatabaseException e)
@@ -250,10 +268,10 @@ public class DataImporter
 			f.setTitle(title_Element.getTextContent());
 			f.setXCoord(Integer.valueOf(xCoord_Element.getTextContent()));
 			f.setWidth(Integer.valueOf(width_Element.getTextContent()));
-			f.setHelpHTML("records"+File.pathSeparator+helpHTML_Element.getTextContent());
+			f.setHelpHTML("records"+File.separator+helpHTML_Element.getTextContent());
 			if(knownData_Element != null) //optional filepath
 			{
-				f.setKnownData("records"+File.pathSeparator+knownData_Element.getTextContent());
+				f.setKnownData("records"+File.separator+knownData_Element.getTextContent());
 			}
 			f.setColumn(i);
 			

@@ -38,16 +38,16 @@ public class GetFields_Result
 	{
 		if(fields==null || fields.isEmpty())
 		{
-			return "FAILED/n";
+			return "FAILED\n";
 		}
 		else
 		{
 			StringBuilder result = new StringBuilder();
 			for(Field f : fields)
 			{
-				result.append(f.getProjectID() + "/n");
-				result.append(f.getFieldID() + "/n");
-				result.append(f.getTitle() + "/n");
+				result.append(f.getProjectID() + "\n");
+				result.append(f.getFieldID() + "\n");
+				result.append(f.getTitle() + "\n");
 			}
 			return result.toString();
 		}

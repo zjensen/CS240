@@ -16,8 +16,8 @@ public class BatchesDAO_Test
 	@Before
 	public void setup() throws DatabaseException 
 	{
+		Database.initialize();
 		db = new Database();
-		db.initialize();
 		db.startTransaction();
 		bDAO = db.getBatchesDAO();
 		ArrayList<Batch> batchList = bDAO.getAll();

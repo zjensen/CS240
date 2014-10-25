@@ -2,7 +2,10 @@ package servertester.controllers;
 
 import java.util.*;
 
+import client.communication.ClientCommunicator;
+import client.communication.ClientCommunicatorException;
 import servertester.views.*;
+import shared.communication.*;
 
 public class Controller implements IController {
 
@@ -98,25 +101,121 @@ public class Controller implements IController {
 		}
 	}
 	
-	private void validateUser() {
+	private void validateUser() 
+	{
+		ClientCommunicator cc = new ClientCommunicator(_view.getHost(), _view.getPort(),this);
+		String[] inputParams = _view.getParameterValues();
+		ValidateUser_Params params = new ValidateUser_Params(inputParams[0],inputParams[1]);
+		try 
+		{
+			ValidateUser_Result result = cc.validateUser(params);
+			_view.setResponse(result.toString());
+		} 
+		catch (ClientCommunicatorException e) 
+		{
+			_view.setResponse("FAILED\n");
+		}
 	}
 	
-	private void getProjects() {
+	private void getProjects() 
+	{
+		ClientCommunicator cc = new ClientCommunicator(_view.getHost(), _view.getPort(),this);
+		String[] inputParams = _view.getParameterValues();
+		GetProjects_Params params = new GetProjects_Params(inputParams[0],inputParams[1]);
+		try 
+		{
+			GetProjects_Result result = cc.getProjects(params);
+			_view.setResponse(result.toString());
+		} 
+		catch (ClientCommunicatorException e) 
+		{
+			_view.setResponse("FAILED\n");
+		}
 	}
 	
-	private void getSampleImage() {
+	private void getSampleImage() 
+	{
+		ClientCommunicator cc = new ClientCommunicator(_view.getHost(), _view.getPort(),this);
+		String[] inputParams = _view.getParameterValues();
+		GetSampleImage_Params params = new GetSampleImage_Params(inputParams[0],inputParams[1],inputParams[2]);
+		try 
+		{
+			GetSampleImage_Result result = cc.getSampleImage(params);
+			_view.setResponse(result.toString());
+		} 
+		catch (ClientCommunicatorException e) 
+		{
+			_view.setResponse("FAILED\n");
+		}
 	}
 	
-	private void downloadBatch() {
+	private void downloadBatch() 
+	{
+		ClientCommunicator cc = new ClientCommunicator(_view.getHost(), _view.getPort(),this);
+		String[] inputParams = _view.getParameterValues();
+		DownloadBatch_Params params = new DownloadBatch_Params(inputParams[0],inputParams[1],inputParams[2]);
+		try 
+		{
+			DownloadBatch_Result result = cc.downloadBatch(params);
+			_view.setResponse(result.toString());
+		} 
+		catch (ClientCommunicatorException e) 
+		{
+			_view.setResponse("FAILED\n");
+		}
 	}
 	
-	private void getFields() {
+	private void getFields() 
+	{
+		ClientCommunicator cc = new ClientCommunicator(_view.getHost(), _view.getPort(),this);
+		String[] inputParams = _view.getParameterValues();
+		GetFields_Params params = new GetFields_Params(inputParams[0],inputParams[1],inputParams[2]);
+		try 
+		{
+			GetFields_Result result = cc.getFields(params);
+			_view.setResponse(result.toString());
+		} 
+		catch (ClientCommunicatorException e) 
+		{
+			_view.setResponse("FAILED\n");
+		}
 	}
 	
-	private void submitBatch() {
+	private void submitBatch() 
+	{
+		ClientCommunicator cc = new ClientCommunicator(_view.getHost(), _view.getPort(),this);
+		String[] inputParams = _view.getParameterValues();
+		SubmitBatch_Params params = new SubmitBatch_Params(inputParams[0],inputParams[1],inputParams[2],inputParams[3]);
+		try 
+		{
+			SubmitBatch_Result result = cc.submitBatch(params);
+			_view.setResponse(result.toString());
+		} 
+		catch (ClientCommunicatorException e) 
+		{
+			_view.setResponse("FAILED\n");
+		}
 	}
 	
-	private void search() {
+	private void search() 
+	{
+		ClientCommunicator cc = new ClientCommunicator(_view.getHost(), _view.getPort(),this);
+		String[] inputParams = _view.getParameterValues();
+		if(inputParams[2].isEmpty()||inputParams[3].isEmpty())
+		{
+			_view.setResponse("FAILED\n");
+			return;
+		}
+		Search_Params params = new Search_Params(inputParams[0],inputParams[1],inputParams[2],inputParams[3]);
+		try 
+		{
+			Search_Result result = cc.search(params);
+			_view.setResponse(result.toString());
+		} 
+		catch (ClientCommunicatorException e) 
+		{
+			_view.setResponse("FAILED\n");
+		}
 	}
 
 }

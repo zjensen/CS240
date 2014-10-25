@@ -4,6 +4,7 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.logging.Logger;
 
 import server.DatabaseException;
 
@@ -22,6 +23,7 @@ public class Database
 	private UsersDAO usersDAO;
 	private ValuesDAO valuesDAO;
 	private Connection connection;
+	private Logger logger = Logger.getLogger("Database");
 	/**
 	 * Constructs database class
 	 * Sets database accept objects for each model as null
@@ -40,7 +42,7 @@ public class Database
 	 * Initializes the database
 	 * @throws DatabaseException 
 	 */
-	public void initialize() throws DatabaseException
+	public static void initialize() throws DatabaseException
 	{
 		String driver = "org.sqlite.JDBC";
 		try {
@@ -149,9 +151,11 @@ public class Database
 		{
 		    connection = DriverManager.getConnection(connectionURL);
 		    connection.setAutoCommit(false); //don't auto commit, will commit at end of transaction
+		    logger.info("database transaction successfully started");
 		}
 		catch (SQLException e) 
 		{
+			logger.info(e.getMessage());
 			throw new DatabaseException();
 		}
 	}
@@ -176,6 +180,7 @@ public class Database
 		}
 		catch(SQLException e)
 		{
+			logger.info(e.getMessage());
 			throw new DatabaseException(); //or nah
 		}
 		finally
@@ -186,9 +191,11 @@ public class Database
 			}
 			catch(SQLException e)
 			{
+				logger.info(e.getMessage());
 				throw new DatabaseException(); //or nah
 			}
 		}
 		connection = null; //after connection closed or failed, reset as null
+		logger.info("transaction ended successfully");
 	}
 }
