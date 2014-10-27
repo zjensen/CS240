@@ -44,8 +44,8 @@ public class DataImporter
 		Files.copy(emptyDB.toPath(), fullDB.toPath(), StandardCopyOption.REPLACE_EXISTING); //replace full db with empty one to start fresh
 		File toImport = new File(args[0]); //xml file
 		File recordsFile = new File("records");
-		FileUtils.copyDirectory(toImport.getParentFile(), recordsFile);
-		//Files.copy(toImport.getParentFile().toPath(), recordsFile.toPath(), StandardCopyOption.REPLACE_EXISTING); //add path
+		FileUtils.copyDirectory(toImport.getParentFile(), recordsFile.getAbsoluteFile());
+		//Files.copy(toImport.getParentFile().getAbsoluteFile().toPath(), recordsFile.getAbsoluteFile().toPath(), StandardCopyOption.REPLACE_EXISTING); //add path
 		importer = new DataImporter();
 		importer.parseUsers(toImport);
 		importer.parseProjects(toImport);

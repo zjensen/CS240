@@ -151,7 +151,7 @@ public class Database
 		{
 		    connection = DriverManager.getConnection(connectionURL);
 		    connection.setAutoCommit(false); //don't auto commit, will commit at end of transaction
-		    logger.info("database transaction successfully started");
+		   // logger.info("database transaction successfully started");
 		}
 		catch (SQLException e) 
 		{
@@ -181,7 +181,8 @@ public class Database
 		catch(SQLException e)
 		{
 			logger.info(e.getMessage());
-			throw new DatabaseException(); //or nah
+			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			throw new DatabaseException(e); //or nah
 		}
 		finally
 		{
@@ -196,6 +197,6 @@ public class Database
 			}
 		}
 		connection = null; //after connection closed or failed, reset as null
-		logger.info("transaction ended successfully");
+		//logger.info("transaction ended successfully");
 	}
 }

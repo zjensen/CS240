@@ -28,7 +28,7 @@ public class GetSampleImage_Result
 	 */
 	public String toString()
 	{
-		if(imageURL == null)
+		if(imageURL == null || imageURL.isEmpty())
 		{
 			return "FAILED\n";
 		}

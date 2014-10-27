@@ -69,7 +69,7 @@ public class DownloadBatch_Result
 	}
 	public String toString()
 	{
-		if(batchID == -1)
+		if(this.batchID == -1 || this.fields == null || this.imageURL == null)
 		{
 			return "FAILED\n";
 		}

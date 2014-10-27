@@ -1,5 +1,8 @@
 package server.facade;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
@@ -8,6 +11,8 @@ import server.DatabaseException;
 import server.dba.*;
 import shared.communication.*;
 import shared.model.*;
+
+import org.apache.commons.io.*;
 
 public class Server_Facade 
 {
@@ -28,7 +33,12 @@ public class Server_Facade
 	{
 		
 	}
-	
+	/**
+	 * validates if a user is in the database
+	 * @param params
+	 * @return
+	 * @throws DatabaseException
+	 */
 	public ValidateUser_Result validateUser(ValidateUser_Params params) throws DatabaseException
 	{
 		logger.info("SF-validateUser");
@@ -60,10 +70,15 @@ public class Server_Facade
 			throw new DatabaseException();
 		}
 	}
-	
+	/**
+	 * returns results with all projects from database
+	 * @param params
+	 * @return project info
+	 * @throws DatabaseException
+	 */
 	public GetProjects_Result getProjects(GetProjects_Params params) throws DatabaseException
 	{
-		logger.info("getProjects");
+		logger.info("SF-getProjects");
 		Database db = new Database();
 		ArrayList<Project> projects = new ArrayList<Project>();
 		ValidateUser_Params vup = new ValidateUser_Params(params.getUsername(),params.getPassword());
@@ -84,10 +99,15 @@ public class Server_Facade
 		}
 		return new GetProjects_Result(projects);
 	}
-	
+	/**
+	 * returns first image in selected project
+	 * @param params
+	 * @return image url
+	 * @throws DatabaseException
+	 */
 	public GetSampleImage_Result getSampleImage(GetSampleImage_Params params) throws DatabaseException 
 	{
-		logger.info("getSampleImage");
+		logger.info("SF-getSampleImage");
 		Database db = new Database();
 		String url = null;
 		ValidateUser_Params vup = new ValidateUser_Params(params.getUsername(),params.getPassword());
@@ -112,14 +132,19 @@ public class Server_Facade
 		}
 		return new GetSampleImage_Result(url);
 	}
-	
+	/**
+	 * Downloads a batch and assigns the batch and user to eachother
+	 * @param params
+	 * @return batches information
+	 * @throws DatabaseException
+	 */
 	public DownloadBatch_Result downloadBatch(DownloadBatch_Params params) throws DatabaseException 
 	{
 		logger.info("SF-downloadBatch");
+		DownloadBatch_Result result= new DownloadBatch_Result();
 		Database db = new Database();
 		ValidateUser_Params vup = new ValidateUser_Params(params.getUsername(),params.getPassword());
 		ValidateUser_Result vur = validateUser(vup);
-		DownloadBatch_Result result = new DownloadBatch_Result();
 		if(vur.isValid() && vur.getUser().getBatchID() == -1) //user is valid and doesn't have assigned batch
 		{
 			try 
@@ -128,14 +153,20 @@ public class Server_Facade
 				Project project = db.getProjectsDAO().get(params.getProjectID());
 				ArrayList<Field> fields = db.getFieldsDAO().getAll(params.getProjectID());
 				ArrayList<Batch> batches = db.getBatchesDAO().getAll(params.getProjectID());
-				db.endTransaction(false);
 				for(Batch batch : batches)
 				{
-					if(batch.getUserID() == -1)
+					if(batch.getUserID() == -1 && !batch.getCompleted())
 					{
+						User user = vur.getUser();
+						user.setBatchID(batch.getBatchID());
+						batch.setUserID(user.getUserID());
+						db.getBatchesDAO().update(batch); //sets batch as assigned to the user
+						db.getUsersDAO().update(user); //sets users assigned batch
+						db.endTransaction(false);
 						return new DownloadBatch_Result(batch,project,fields); 
 					}
 				}
+				db.endTransaction(false);
 			} 
 			catch (DatabaseException e) 
 			{
@@ -146,7 +177,12 @@ public class Server_Facade
 		}
 		return result;
 	}
-	
+	/**
+	 * Submits a batch to the server
+	 * @param params
+	 * @return boolean whether or not submit was a success
+	 * @throws DatabaseException
+	 */
 	public SubmitBatch_Result submitBatch(SubmitBatch_Params params) throws DatabaseException
 	{
 		logger.info("SF-submitBatch");
@@ -155,9 +191,10 @@ public class Server_Facade
 		ValidateUser_Result vur = validateUser(vup);
 		if(vur.isValid())
 		{
-			db.startTransaction();
 			try
 			{
+				db.startTransaction();
+				
 				ValuesDAO vDAO = db.getValuesDAO();
 				
 				User user = vur.getUser(); //get user that was working on batch
@@ -169,7 +206,7 @@ public class Server_Facade
 				ArrayList<Record> records = (db.getRecordsDAO().getAll(batch));
 				ArrayList<Field> fields = db.getFieldsDAO().getAll(projectID);
 				
-				String[] recordStrings = params.getValues().split("[;]"); //split input into records
+				String[] recordStrings = params.getValues().split(";", records.size()); //split input into records
 				if(recordStrings.length != project.getRecordsPerImage()) //too many records submitted
 				{
 					db.endTransaction(false);
@@ -178,9 +215,9 @@ public class Server_Facade
 				int row = 0; //to keep track of what record were looking at
 				for(String recordString : recordStrings)
 				{
-					String[] valueStrings = recordString.split("[,]"); //split records into values
+					String[] valueStrings = recordString.split(",",fields.size()); //split records into values
 					
-					if(valueStrings.length != fields.size())
+					if(valueStrings.length != fields.size() && valueStrings.length !=0)
 					{
 						db.endTransaction(false);
 						return new SubmitBatch_Result(false);
@@ -192,6 +229,10 @@ public class Server_Facade
 					
 					for(String valueString:valueStrings) //for each value in the record
 					{
+						if(valueString.isEmpty())
+						{
+							valueString = null;
+						}
 						if(values.get(column) == null)
 						{
 							Value v = new Value(-1,records.get(row).getRecordID(),fields.get(column).getFieldID(),batchID,projectID,valueString);
@@ -209,7 +250,10 @@ public class Server_Facade
 				}
 				
 				user.setBatchID(-1); //reset users assigned batch
+				user.setIndexedRecords(user.getIndexedRecords()+row); //updates users number of indexed records
 				batch.setUserID(-1);
+				boolean completed = db.getValuesDAO().checkCompletion(batchID);
+				batch.setCompleted(completed);
 				db.getBatchesDAO().update(batch);
 				db.getUsersDAO().update(user);
 				db.endTransaction(true);
@@ -220,13 +264,19 @@ public class Server_Facade
 				db.endTransaction(false);
 				throw new DatabaseException();
 			}
+			return new SubmitBatch_Result(true);
 		}
-		return new SubmitBatch_Result(true);
+		return new SubmitBatch_Result(false);
 	}
-	
+	/**
+	 * Returns list of fields
+	 * @param params
+	 * @return
+	 * @throws DatabaseException
+	 */
 	public GetFields_Result getFields(GetFields_Params params) throws DatabaseException 
 	{
-		logger.info("getFields");
+		logger.info("SF-getFields");
 		Database db = new Database();
 		ValidateUser_Params vup = new ValidateUser_Params(params.getUsername(),params.getPassword());
 		ArrayList<Field> fields = new ArrayList<Field>();
@@ -254,7 +304,12 @@ public class Server_Facade
 		}
 		return new GetFields_Result(fields);
 	}
-	
+	/**
+	 * Searches selected fields for search values
+	 * @param params
+	 * @return
+	 * @throws DatabaseException
+	 */
 	public Search_Result search(Search_Params params) throws DatabaseException
 	{
 		Database db = new Database();
@@ -301,9 +356,19 @@ public class Server_Facade
 		}
 		return new Search_Result(tuples);
 	}
-
-	
-	
-
-	
+	/**
+	 * Returns bite array with data from download
+	 * @param params
+	 * @return
+	 * @throws IOException
+	 */
+	public DownloadFile_Result downloadFile(DownloadFile_Params params) throws IOException 
+	{
+		logger.info("SF-downloadFile");
+		InputStream is = new FileInputStream(params.getUrl());
+		byte[] data = null;
+		data = IOUtils.toByteArray(is);
+		is.close();
+		return new DownloadFile_Result(data);
+	}
 }

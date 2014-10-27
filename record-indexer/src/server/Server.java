@@ -97,6 +97,7 @@ private HttpServer server;
 		server.createContext("/getFields",gfh);
 		server.createContext("/submitBatch",sbh);
 		server.createContext("/search",sh);
+		server.createContext("/records",dfh);
 		
 		logger.info("Starting HTTP Server");
 
@@ -110,6 +111,7 @@ private HttpServer server;
 	private HttpHandler gfh = new GetFields_Handler();
 	private HttpHandler sbh = new SubmitBatch_Handler();
 	private HttpHandler sh = new Search_Handler();
+	private HttpHandler dfh = new DownloadFile_Handler();
 	
 	public static void main(String[] args) 
 	{

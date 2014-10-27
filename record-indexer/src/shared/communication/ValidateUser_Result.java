@@ -18,6 +18,15 @@ public class ValidateUser_Result
 		this.valid = valid;
 	}
 	/**
+	 * if user isnt found, just return false
+	 * @param valid
+	 */
+	public ValidateUser_Result(boolean valid) 
+	{
+		this.user = null;
+		this.valid = valid;
+	}
+	/**
 	 * @return TRUE and user's first name, last name, and indexed records if valid user. Else FALSE
 	 */
 	@Override

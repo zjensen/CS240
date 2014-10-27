@@ -1,9 +1,22 @@
 package server;
-public class ServerException extends Exception {
+@SuppressWarnings("serial")
+public class ServerException extends Exception 
+{
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	public ServerException() {
+		return;
+	}
+
+	public ServerException(String message) {
+		super(message);
+	}
+
+	public ServerException(Throwable throwable) {
+		super(throwable);
+	}
+
+	public ServerException(String message, Throwable throwable) {
+		super(message, throwable);
+	}
 
 }

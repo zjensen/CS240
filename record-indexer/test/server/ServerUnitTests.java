@@ -35,7 +35,8 @@ public class ServerUnitTests
 			"server.dba.FieldsDAO_Test",
 			"server.dba.RecordsDAO_Test",
 			"server.dba.ValuesDAO_Test",
-			"server.dba.UsersDAO_Test"
+			"server.dba.UsersDAO_Test",
+			"client.communication.ClientCommunicator_Test"
 		};
 
 		org.junit.runner.JUnitCore.main(testClasses);

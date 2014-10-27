@@ -37,7 +37,7 @@ public class GetProjects_Handler implements HttpHandler
 		}
 		catch(DatabaseException e)
 		{
-			logger.info(e.getMessage());
+			logger.severe(e.getMessage());
 			throw new IOException(e);
 		}
 	}

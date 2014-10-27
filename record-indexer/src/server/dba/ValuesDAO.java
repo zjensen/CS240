@@ -25,6 +25,27 @@ public class ValuesDAO
 		this.db = db;
 	}
 	
+	public boolean checkCompletion(int batchID) throws DatabaseException
+	{
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try
+		{
+			String sql = "SELECT * FROM \"values\" WHERE data ISNULL and batchID = " + Integer.toString(batchID);
+			stmt = db.getConnection().prepareStatement(sql);
+			rs = stmt.executeQuery();
+			while(rs.next()) //if any values in batch are null
+			{
+				return false;
+			}
+		}
+		catch(SQLException e)
+		{
+			//System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			throw new DatabaseException();
+		}
+		return true;
+	}
 	/**
 	 * Searches for the specified project then returns its values
 	 * @param project - the project you are searching in

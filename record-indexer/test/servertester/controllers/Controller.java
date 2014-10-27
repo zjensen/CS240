@@ -3,7 +3,7 @@ package servertester.controllers;
 import java.util.*;
 
 import client.communication.ClientCommunicator;
-import client.communication.ClientCommunicatorException;
+import client.communication.ClientException;
 import servertester.views.*;
 import shared.communication.*;
 
@@ -111,7 +111,7 @@ public class Controller implements IController {
 			ValidateUser_Result result = cc.validateUser(params);
 			_view.setResponse(result.toString());
 		} 
-		catch (ClientCommunicatorException e) 
+		catch (ClientException e) 
 		{
 			_view.setResponse("FAILED\n");
 		}
@@ -127,7 +127,7 @@ public class Controller implements IController {
 			GetProjects_Result result = cc.getProjects(params);
 			_view.setResponse(result.toString());
 		} 
-		catch (ClientCommunicatorException e) 
+		catch (ClientException e) 
 		{
 			_view.setResponse("FAILED\n");
 		}
@@ -143,7 +143,7 @@ public class Controller implements IController {
 			GetSampleImage_Result result = cc.getSampleImage(params);
 			_view.setResponse(result.toString());
 		} 
-		catch (ClientCommunicatorException e) 
+		catch (ClientException e) 
 		{
 			_view.setResponse("FAILED\n");
 		}
@@ -159,7 +159,7 @@ public class Controller implements IController {
 			DownloadBatch_Result result = cc.downloadBatch(params);
 			_view.setResponse(result.toString());
 		} 
-		catch (ClientCommunicatorException e) 
+		catch (ClientException e) 
 		{
 			_view.setResponse("FAILED\n");
 		}
@@ -175,7 +175,7 @@ public class Controller implements IController {
 			GetFields_Result result = cc.getFields(params);
 			_view.setResponse(result.toString());
 		} 
-		catch (ClientCommunicatorException e) 
+		catch (ClientException e) 
 		{
 			_view.setResponse("FAILED\n");
 		}
@@ -191,7 +191,7 @@ public class Controller implements IController {
 			SubmitBatch_Result result = cc.submitBatch(params);
 			_view.setResponse(result.toString());
 		} 
-		catch (ClientCommunicatorException e) 
+		catch (ClientException e) 
 		{
 			_view.setResponse("FAILED\n");
 		}
@@ -212,7 +212,7 @@ public class Controller implements IController {
 			Search_Result result = cc.search(params);
 			_view.setResponse(result.toString());
 		} 
-		catch (ClientCommunicatorException e) 
+		catch (ClientException e) 
 		{
 			_view.setResponse("FAILED\n");
 		}
