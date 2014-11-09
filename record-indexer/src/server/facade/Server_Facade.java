@@ -162,7 +162,7 @@ public class Server_Facade
 						batch.setUserID(user.getUserID());
 						db.getBatchesDAO().update(batch); //sets batch as assigned to the user
 						db.getUsersDAO().update(user); //sets users assigned batch
-						db.endTransaction(false);
+						db.endTransaction(true);
 						return new DownloadBatch_Result(batch,project,fields); 
 					}
 				}
@@ -199,6 +199,11 @@ public class Server_Facade
 				
 				User user = vur.getUser(); //get user that was working on batch
 				Batch batch = db.getBatchesDAO().get(params.getBatchID());
+				if(user.getUserID() != batch.getUserID() || batch.getBatchID() != user.getBatchID())
+				{
+					db.endTransaction(false);
+					return new SubmitBatch_Result(false);
+				}
 				Project project = db.getProjectsDAO().get(batch.getProjectID());
 				int batchID = batch.getBatchID();
 				int projectID = project.getProjectID();
@@ -217,7 +222,7 @@ public class Server_Facade
 				{
 					String[] valueStrings = recordString.split(",",fields.size()); //split records into values
 					
-					if(valueStrings.length != fields.size() && valueStrings.length !=0)
+					if(valueStrings.length != fields.size())
 					{
 						db.endTransaction(false);
 						return new SubmitBatch_Result(false);
@@ -252,11 +257,11 @@ public class Server_Facade
 				user.setBatchID(-1); //reset users assigned batch
 				user.setIndexedRecords(user.getIndexedRecords()+row); //updates users number of indexed records
 				batch.setUserID(-1);
-				boolean completed = db.getValuesDAO().checkCompletion(batchID);
-				batch.setCompleted(completed);
+				batch.setCompleted(true);
 				db.getBatchesDAO().update(batch);
 				db.getUsersDAO().update(user);
 				db.endTransaction(true);
+				return new SubmitBatch_Result(true);
 			}
 			catch(DatabaseException e)
 			{
@@ -264,7 +269,6 @@ public class Server_Facade
 				db.endTransaction(false);
 				throw new DatabaseException();
 			}
-			return new SubmitBatch_Result(true);
 		}
 		return new SubmitBatch_Result(false);
 	}
@@ -293,7 +297,7 @@ public class Server_Facade
 				{
 					fields = db.getFieldsDAO().getAll(params.getProjectID());
 				}
-				db.endTransaction(false);
+				db.endTransaction(true);
 			} 
 			catch (DatabaseException e) 
 			{

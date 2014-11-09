@@ -12,7 +12,7 @@ import org.apache.commons.io.IOUtils;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
-import servertester.controllers.Controller;
+//import servertester.controllers.Controller;
 import shared.communication.*;
 /**
  * Facilitates communication between client and server
@@ -23,7 +23,7 @@ public class ClientCommunicator
 {
 	private String host;
 	private int port;
-	private Controller controller;
+//	private Controller controller;
 	
 	private Logger logger = Logger.getLogger("ClientCommunicator");
 	
@@ -31,14 +31,6 @@ public class ClientCommunicator
 	{
 		this.host = host;
 		this.port = Integer.valueOf(port);
-		controller = null;
-	}
-	
-	public ClientCommunicator(String host, String port, Controller controller) 
-	{
-		this.host = host;
-		this.port = Integer.valueOf(port);
-		this.controller = controller;
 	}
 
 	/**
@@ -171,10 +163,6 @@ public class ClientCommunicator
 			connection.connect();
 			OutputStream request = connection.getOutputStream();
 			xs.toXML(params, request);
-			if(controller!=null)
-			{
-				controller.getView().setRequest(request.toString());
-			}
 			request.close();
 			if(connection.getResponseCode() == HttpURLConnection.HTTP_OK) //200
 			{
@@ -207,10 +195,6 @@ public class ClientCommunicator
 			connection.setRequestMethod("GET");
 			connection.setDoOutput(true);
 			connection.connect();
-			if(controller!=null)
-			{
-				controller.getView().setRequest(connection.getRequestMethod().toString());
-			}
 			if(connection.getResponseCode() == HttpURLConnection.HTTP_OK) //200
 			{
 				InputStream response = connection.getInputStream();

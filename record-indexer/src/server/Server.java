@@ -17,7 +17,7 @@ import com.sun.net.httpserver.HttpServer;
 
 public class Server 
 {
-	private static int SERVER_PORT_NUMBER = 8080;
+	private static int SERVER_PORT_NUMBER = 39640;
 	private static final int MAX_WAITING_CONNECTIONS = 10;
 	
 	private static Logger logger;
@@ -97,7 +97,7 @@ private HttpServer server;
 		server.createContext("/getFields",gfh);
 		server.createContext("/submitBatch",sbh);
 		server.createContext("/search",sh);
-		server.createContext("/records",dfh);
+		server.createContext("/records",dfh); //download
 		
 		logger.info("Starting HTTP Server");
 
@@ -115,7 +115,7 @@ private HttpServer server;
 	
 	public static void main(String[] args) 
 	{
-		if(args[0].isEmpty())
+		if(args.length != 1)
 		{
 			new Server().run();
 		}

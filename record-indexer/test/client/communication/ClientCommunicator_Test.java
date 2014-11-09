@@ -26,7 +26,7 @@ public class ClientCommunicator_Test
 	@BeforeClass
 	public static void setUpClass() throws Exception
 	{
-		String[] args = {"/Users/zsjensen/Downloads/Records/Records.xml"};
+		String[] args = {"recordsTesting/Records.xml"};
 		DataImporter.main(args);
 	}
 	@Before
@@ -160,41 +160,91 @@ public class ClientCommunicator_Test
 	@Test
 	public void testSubmitBatch() throws Exception 
 	{
-		SubmitBatch_Params params1 = new SubmitBatch_Params("test1", "test1", "1", "1,1,1,1;2,2,2,2;3,3,3,3;4,4,4,4;5,5,5,5;6,6,6,6;7,7,7,7;8,8,8,8"); //correct
+		db.startTransaction();
+		UsersDAO uDAO = db.getUsersDAO();
+		BatchesDAO bDAO = db.getBatchesDAO();
+		User u1 = new User(-1,"u1","u1","user","one", "email1", 0, 1);
+		User u2 = new User(-1,"u2","u2","user","two", "email2", 0, 2);
+		User u3 = new User(-1,"u3","u3","user","three", "email3", 0, 4);
+		User u4 = new User(-1,"u4","u4","user","four", "email4", 0, 5);
+		User u5 = new User(-1,"u5","u5","user","five", "email5", 0, 25);
+		User u6 = new User(-1,"u6","u6","user","six", "email6", 0, 3);
+		
+		Batch b1 = bDAO.get(1);
+		Batch b2 = bDAO.get(2);
+		Batch b3 = bDAO.get(4);
+		Batch b4 = bDAO.get(5);
+		Batch b5 = bDAO.get(25);
+		Batch b6 = bDAO.get(3);
+		
+		int uID1 = uDAO.add(u1);
+		int uID2 = uDAO.add(u2);
+		int uID3 = uDAO.add(u3);
+		int uID4 = uDAO.add(u4);
+		int uID5 = uDAO.add(u5);
+		int uID6 = uDAO.add(u6);
+		
+		u1.setUserID(uID1);
+		u2.setUserID(uID2);
+		u3.setUserID(uID3);
+		u4.setUserID(uID4);
+		u5.setUserID(uID5);
+		u6.setUserID(uID6);
+		
+		b1.setUserID(uID1);
+		b2.setUserID(uID2);
+		b3.setUserID(uID3);
+		b4.setUserID(uID4);
+		b5.setUserID(uID5);
+		b6.setUserID(uID6);
+		
+		bDAO.update(b1);
+		bDAO.update(b2);
+		bDAO.update(b3);
+		bDAO.update(b4);
+		bDAO.update(b5);
+		bDAO.update(b6);
+		
+		uDAO.update(u1);
+		uDAO.update(u2);
+		uDAO.update(u3);
+		uDAO.update(u4);
+		uDAO.update(u5);
+		uDAO.update(u6);
+		
+		db.endTransaction(true);
+		
+		SubmitBatch_Params params1 = new SubmitBatch_Params("u1", "u1", "1", "1,1,1,1;2,2,2,2;3,3,3,3;4,4,4,4;5,5,5,5;6,6,6,6;7,7,7,7;8,8,8,8"); //correct
 		SubmitBatch_Result result1 = cc.submitBatch(params1);
 		assertEquals(result1.toString(),"TRUE\n");
 		
-		SubmitBatch_Params params2 = new SubmitBatch_Params("test1", "test1", "2", "1,1,1;2,2,2,2;,3,,4,4,4;5,5,5,5;6,,6;7,7,,7,8,8,"); //incorrect
+		SubmitBatch_Params params2 = new SubmitBatch_Params("u2", "u2", "2", "1,1,1;2,2,2,2;,3,,4,4,4;5,5,5,5;6,,6;7,7,,7,8,8,"); //incorrect
 		SubmitBatch_Result result2 = cc.submitBatch(params2);
-		assertEquals(result2.toString(),"FALSE\n");
+		assertEquals(result2.toString(),"FAILED\n");
 		
-		SubmitBatch_Params params3 = new SubmitBatch_Params("test1", "test1", "4", ",1,,;,,2,;,3,,;,,,;,,,;,,,;,,,;,,,"); //correct
+		SubmitBatch_Params params3 = new SubmitBatch_Params("u3", "u3", "4", ",1,,;,,2,;,3,,;,,,;,,,;,,,;,,,;,,,"); //correct
 		SubmitBatch_Result result3 = cc.submitBatch(params3);
 		assertEquals(result3.toString(),"TRUE\n");
 		
-		SubmitBatch_Params params6 = new SubmitBatch_Params("sheila", "parker", "5", ",,,;,,,;,,,;,,,;,,,;,,,;,,,;,,,"); //correct
-		SubmitBatch_Result result6 = cc.submitBatch(params6);
-		assertEquals(result6.toString(),"TRUE\n");
-		
-		SubmitBatch_Params params4 = new SubmitBatch_Params("test1", "test1", "25", "1,1,1,1;2,2,2,2;3,3,3,3;4,4,4,4;5,5,5,5;6,6,6,6;7,7,7,7;8,8,8,8"); //incorrect field number
+		SubmitBatch_Params params4 = new SubmitBatch_Params("u4", "u4", "5", ",,,;,,,;,,,;,,,;,,,;,,,;,,,;,,,"); //correct
 		SubmitBatch_Result result4 = cc.submitBatch(params4);
-		assertEquals(result4.toString(),"FALSE\n");
+		assertEquals(result4.toString(),"TRUE\n");
 		
-		SubmitBatch_Params params5 = new SubmitBatch_Params("test2", "test2", "3", "1,1,1,1;2,2,2,2;3,3,3,3;4,4,4,4;5,5,5,5;6,6,6,6;7,7,7,7;8,8,8,8"); //correct, check user and batch
+		SubmitBatch_Params params5 = new SubmitBatch_Params("u5", "u5", "25", "1,1,1,1;2,2,2,2;3,3,3,3;4,4,4,4;5,5,5,5;6,6,6,6;7,7,7,7;8,8,8,8"); //incorrect field number
 		SubmitBatch_Result result5 = cc.submitBatch(params5);
-		assertEquals(result5.toString(),"TRUE\n");
+		assertEquals(result5.toString(),"FAILED\n");
+		
+		SubmitBatch_Params params6 = new SubmitBatch_Params("u6", "u6", "4", "1,1,1,1;2,2,2,2;3,3,3,3;4,4,4,4;5,5,5,5;6,6,6,6;7,7,7,7;8,8,8,8"); //incorrect, check user and batch
+		SubmitBatch_Result result6 = cc.submitBatch(params6);
+		assertEquals(result6.toString(),"FAILED\n");
+		
 		db.startTransaction();
-		User user = db.getUsersDAO().get(1);
-		User user3 = db.getUsersDAO().get(3);
-		Batch batch1 = db.getBatchesDAO().get(1);
-		Batch batch4 = db.getBatchesDAO().get(4);
-		Batch batch5 = db.getBatchesDAO().get(5);
-		assertEquals(user.getBatchID(),-1);
-		assertEquals(user.getIndexedRecords(),16);
-		assertEquals(user3.getIndexedRecords(),8);
-		assertEquals(batch1.getCompleted(),true);
-		assertEquals(batch4.getCompleted(),false);
-		assertEquals(batch5.getCompleted(),false);
+		assertEquals(db.getUsersDAO().get(9).getIndexedRecords(),0);
+		assertEquals(db.getBatchesDAO().get(5).getCompleted(),true);
+		assertEquals(db.getUsersDAO().get(6).getIndexedRecords(),8);
+		assertEquals(db.getBatchesDAO().get(25).getUserID(),8);
+		assertEquals(db.getBatchesDAO().get(1).getUserID(),-1);
+		assertEquals(db.getUsersDAO().get(4).getBatchID(),-1);
 		db.endTransaction(false);
 		
 	}

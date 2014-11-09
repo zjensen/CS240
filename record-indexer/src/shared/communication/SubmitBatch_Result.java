@@ -21,7 +21,7 @@ public class SubmitBatch_Result
 		}
 		else
 		{
-			return"FALSE\n";
+			return"FAILED\n";
 		}
 	}
 	/**

@@ -103,7 +103,7 @@ public class Controller implements IController {
 	
 	private void validateUser() 
 	{
-		ClientCommunicator cc = new ClientCommunicator(_view.getHost(), _view.getPort(),this);
+		ClientCommunicator cc = new ClientCommunicator(_view.getHost(), _view.getPort());
 		String[] inputParams = _view.getParameterValues();
 		ValidateUser_Params params = new ValidateUser_Params(inputParams[0],inputParams[1]);
 		try 
@@ -119,7 +119,7 @@ public class Controller implements IController {
 	
 	private void getProjects() 
 	{
-		ClientCommunicator cc = new ClientCommunicator(_view.getHost(), _view.getPort(),this);
+		ClientCommunicator cc = new ClientCommunicator(_view.getHost(), _view.getPort());
 		String[] inputParams = _view.getParameterValues();
 		GetProjects_Params params = new GetProjects_Params(inputParams[0],inputParams[1]);
 		try 
@@ -135,7 +135,7 @@ public class Controller implements IController {
 	
 	private void getSampleImage() 
 	{
-		ClientCommunicator cc = new ClientCommunicator(_view.getHost(), _view.getPort(),this);
+		ClientCommunicator cc = new ClientCommunicator(_view.getHost(), _view.getPort());
 		String[] inputParams = _view.getParameterValues();
 		GetSampleImage_Params params = new GetSampleImage_Params(inputParams[0],inputParams[1],inputParams[2]);
 		try 
@@ -151,7 +151,7 @@ public class Controller implements IController {
 	
 	private void downloadBatch() 
 	{
-		ClientCommunicator cc = new ClientCommunicator(_view.getHost(), _view.getPort(),this);
+		ClientCommunicator cc = new ClientCommunicator(_view.getHost(), _view.getPort());
 		String[] inputParams = _view.getParameterValues();
 		DownloadBatch_Params params = new DownloadBatch_Params(inputParams[0],inputParams[1],inputParams[2]);
 		try 
@@ -167,7 +167,7 @@ public class Controller implements IController {
 	
 	private void getFields() 
 	{
-		ClientCommunicator cc = new ClientCommunicator(_view.getHost(), _view.getPort(),this);
+		ClientCommunicator cc = new ClientCommunicator(_view.getHost(), _view.getPort());
 		String[] inputParams = _view.getParameterValues();
 		GetFields_Params params = new GetFields_Params(inputParams[0],inputParams[1],inputParams[2]);
 		try 
@@ -183,7 +183,7 @@ public class Controller implements IController {
 	
 	private void submitBatch() 
 	{
-		ClientCommunicator cc = new ClientCommunicator(_view.getHost(), _view.getPort(),this);
+		ClientCommunicator cc = new ClientCommunicator(_view.getHost(), _view.getPort());
 		String[] inputParams = _view.getParameterValues();
 		SubmitBatch_Params params = new SubmitBatch_Params(inputParams[0],inputParams[1],inputParams[2],inputParams[3]);
 		try 
@@ -199,7 +199,7 @@ public class Controller implements IController {
 	
 	private void search() 
 	{
-		ClientCommunicator cc = new ClientCommunicator(_view.getHost(), _view.getPort(),this);
+		ClientCommunicator cc = new ClientCommunicator(_view.getHost(), _view.getPort());
 		String[] inputParams = _view.getParameterValues();
 		if(inputParams[2].isEmpty()||inputParams[3].isEmpty())
 		{
