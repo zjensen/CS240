@@ -10,5 +10,6 @@
 	<classpathentry kind="lib" path="lib/xstream-1.4.2.jar"/>
 	<classpathentry kind="lib" path="lib/sqlitejdbc-v056.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io-2.4.jar"/>
+	<classpathentry kind="lib" path="lib/thumbnailator-0.4.7-all.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
