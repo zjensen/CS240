@@ -3,16 +3,16 @@ package client.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
 import client.gui.state.BatchState;
@@ -32,15 +32,15 @@ public class IndexingWindow extends JFrame implements ActionListener
 	private DataTabs dataTabs;
 	private HelpTabs helpTabs;
 	private DownloadBatchDialog dbDialog;
+	private ImagePanel imagePanel;
 	
 	public IndexingWindow(BatchState bs)
 	{
 		super("Indexer");
 		this.bs = bs;
 	    setLayout(new BorderLayout());
-		setSize(new Dimension(1000,600));
-		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-		setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
+		setSize(new Dimension(bs.getWindowWidth(),bs.getWindowHeight()));
+		setLocation(bs.getWindowPostion());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setResizable(true);
 		addMenu();
@@ -49,24 +49,27 @@ public class IndexingWindow extends JFrame implements ActionListener
 		
 		dataTabs = new DataTabs(this.bs);
 		helpTabs = new HelpTabs(this.bs);
-		
+		imagePanel = new ImagePanel(this.bs);
 		
 		
 		horizontalSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		horizontalSplitPane.setBackground(new Color(225, 0, 255));
 		horizontalSplitPane.setLeftComponent(dataTabs); //left
 		horizontalSplitPane.setRightComponent(helpTabs); //right
-		horizontalSplitPane.setDividerLocation(0.5);
+		horizontalSplitPane.setDividerLocation(bs.getHorzontalDividerLocation());
 		horizontalSplitPane.setResizeWeight(0.5);
+		
 		
 		verticalSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		verticalSplitPane.setBackground(new Color(125,249,255));
-		verticalSplitPane.setLeftComponent(new JPanel()); //image
+		verticalSplitPane.setLeftComponent(imagePanel); //image
 		verticalSplitPane.setRightComponent(horizontalSplitPane); //horizontal split pane
-		verticalSplitPane.setDividerLocation(0.5);
+		verticalSplitPane.setDividerLocation(bs.getVerticalDividerLocation());
 		verticalSplitPane.setResizeWeight(0.5);
 		
 		this.add(verticalSplitPane,BorderLayout.CENTER);
+		
+		this.addWindowListener(wListener);
 		
 		revalidate();
 	}
@@ -125,5 +128,107 @@ public class IndexingWindow extends JFrame implements ActionListener
 	public JMenuItem getDownloadBatchItem()
 	{
 		return this.downloadBatchItem;
+	}
+	
+	public void reset(BatchState bs)
+	{
+		this.bs = bs;
+		this.imagePanel = new ImagePanel(this.bs);
+		this.dataTabs = new DataTabs(this.bs);
+		this.helpTabs = new HelpTabs(this.bs);
+		
+		horizontalSplitPane.setLeftComponent(dataTabs); //left
+		horizontalSplitPane.setRightComponent(helpTabs); //right
+		horizontalSplitPane.setDividerLocation(bs.getHorzontalDividerLocation());
+		horizontalSplitPane.validate();
+		
+		verticalSplitPane.setLeftComponent(imagePanel); //image
+		verticalSplitPane.setRightComponent(horizontalSplitPane); //horizontal split pane
+		verticalSplitPane.setDividerLocation(bs.getVerticalDividerLocation());
+		verticalSplitPane.validate();
+		
+		this.validate();
+		
+	}
+	
+	
+	
+	private WindowListener wListener = new WindowListener()
+	{
+		@Override
+	    public void windowClosing(WindowEvent e) {
+	    	bs.save();
+	    	System.exit(0);
+	    }
+
+		@Override
+		public void windowOpened(WindowEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void windowClosed(WindowEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void windowIconified(WindowEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void windowDeiconified(WindowEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void windowActivated(WindowEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void windowDeactivated(WindowEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+	};
+	
+	public void invertImage()
+	{
+		this.imagePanel.invertImage();
+	}
+	
+	public int getVerticalDividerLocation()
+	{
+		return verticalSplitPane.getDividerLocation();
+	}
+	
+	public int getHorzontalDividerLocation()
+	{
+		return horizontalSplitPane.getDividerLocation();
+	}
+	public void repaintImage()
+	{
+		this.imagePanel.zoomImage();
+	}
+	public ImagePanel getImagePanel()
+	{
+		return this.imagePanel;
+	}
+	public DataTabs getDataTabs()
+	{
+		return this.dataTabs;
+	}
+
+	/**
+	 * @return the helpTabs
+	 */
+	public HelpTabs getHelpTabs() {
+		return helpTabs;
 	}
 }

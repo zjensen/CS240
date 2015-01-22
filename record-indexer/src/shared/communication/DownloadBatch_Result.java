@@ -47,6 +47,8 @@ public class DownloadBatch_Result
 		this.numRecords = project.getRecordsPerImage();
 		this.numFields = fields.size();
 		this.fields = fields;
+		this.batch=batch;
+		this.project=project;
 	}
 	
 	public void updateURLs(String host, int port)

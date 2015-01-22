@@ -1,9 +1,16 @@
 package client.gui.state;
 
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
@@ -11,32 +18,48 @@ import client.communication.ClientCommunicator;
 import client.communication.ClientException;
 import client.gui.IndexingWindow;
 import client.gui.LoginWindow;
+import client.spell.Corrector;
 import shared.communication.*;
 import shared.model.*;
 
-class Cell{
-	int record;
-	int field;
-}
 public class BatchState 
 {
-	//private List<BatchStateListener> listeners;
+	// GENERAL
+	private ArrayList<BatchStateListener> listeners;
 	private ClientCommunicator cc;
+	private Map<Integer,Corrector> correctors;
 	
-	//views
+	// views
 	private LoginWindow loginWindow;
 	private IndexingWindow indexingWindow;
 	
 	//Synchronization
 	private boolean inverted;
 	private boolean highlightsVisible;
-	private int zoomLevel;
+	private double zoomLevel;
 	private User user;
 	private String[][] dataValues;
 	private Cell currentCell;
 	private Batch batch;
 	private ArrayList<Field> fields;
 	private Project project;
+	private int windowHeight;
+	private int windowWidth;
+	private Point windowPostion;
+	private int horzontalDividerLocation;
+	private int verticalDividerLocation;
+	private int imageX;
+	private int imageY;
+	private ArrayList<String> fieldHelps;
+	private int tableVScroll;
+	private int tableHScroll;
+	private int listVScroll;
+	private int listHScroll;
+	private int formVScroll;
+	private int formHScroll;
+	private int helpVScroll;
+	private boolean[][] cellQuality;
+
 	
 	/**
 	 * Starts the GUI
@@ -45,9 +68,27 @@ public class BatchState
 	 */
 	public BatchState(String host, String port)
 	{
-		cc = new ClientCommunicator(host,port);
-		loginWindow = new LoginWindow(this);
-		loginWindow.setVisible(true);
+		this.cc = new ClientCommunicator(host,port);
+		listeners = new ArrayList<BatchStateListener>();
+		this.windowHeight = 700;
+		this.windowWidth = 1000;
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		this.windowPostion = new Point(dim.width/2-500, dim.height/2-300);
+		this.imageX=-250;
+		this.imageY=0;
+		this.zoomLevel = 0.5;
+		this.currentCell = new Cell(0,0);
+		this.verticalDividerLocation = 300;
+		this.horzontalDividerLocation = 500;
+		this.loginWindow = new LoginWindow(this);
+		this.loginWindow.setVisible(true);
+		tableVScroll=0;
+		tableHScroll=0;
+		listVScroll=0;
+		listHScroll=0;
+		formVScroll=0;
+		formHScroll=0;
+		helpVScroll=0;
 	}
 	
 	/**
@@ -64,8 +105,9 @@ public class BatchState
 			ValidateUser_Result result = cc.validateUser(params);
 			if(result.isValid())
 			{
-				setupIndexer();
 				this.user = result.getUser();
+				new BatchStateLoader(this);
+				setupIndexer();
 				return this.user;
 			}
 			else
@@ -108,6 +150,8 @@ public class BatchState
 	 */
 	public void logout()
 	{
+		this.save();
+		this.clear();
 		indexingWindow.dispose();
 		indexingWindow = null;
 		loginWindow = new LoginWindow(this);
@@ -119,12 +163,10 @@ public class BatchState
 	 */
 	public void save()
 	{
-		//field values
-		//zoom level
-		//scroll position
-		//highlightVisible
-		//inverted
-		//
+		this.indexingWindow.getDataTabs().getDataForm().saveScroll();
+		this.indexingWindow.getDataTabs().getDataTable().saveScroll();
+		this.indexingWindow.getHelpTabs().saveScroll();
+		new BatchStateSaver(this);
 	}
 	
 	
@@ -134,6 +176,7 @@ public class BatchState
 	public void invertImage() 
 	{
 		this.inverted = !this.inverted;
+		this.indexingWindow.invertImage();
 	}
 	
 	
@@ -144,14 +187,38 @@ public class BatchState
 	{
 		try 
 		{
-			SubmitBatch_Result result = cc.submitBatch(new SubmitBatch_Params(this.user.getUsername(),this.user.getPassword(),Integer.toString(this.user.getBatchID()),",,,;,,,;,,,;,,,;,,,;,,,;,,,;,,,;"));
-			result.isSubmitted();
+			StringBuilder sb = new StringBuilder();
+			for(int i=0;i<getProject().getRecordsPerImage();i++) //columns
+			{
+				for(int j=0;j<getFields().size();j++) //rows
+				{
+					sb.append(dataValues[i][j] + ",");
+				}
+				sb.deleteCharAt(sb.length()-1);
+				sb.append(";");
+			}
+			sb.deleteCharAt(sb.length()-1); //removes last semicolon
+			SubmitBatch_Result result = cc.submitBatch(new SubmitBatch_Params(this.user.getUsername(),this.user.getPassword(),Integer.toString(this.user.getBatchID()),sb.toString()));
+			if(result.isSubmitted())
+			{
+				this.user.setBatchID(-1);
+				this.batch = null;
+				this.project = null;
+				this.fields = null;
+				this.fieldHelps = null;
+				this.listeners.clear();
+				File toDelete = new File(this.user.getUsername());
+				toDelete.delete();
+				this.verticalDividerLocation = this.indexingWindow.getVerticalDividerLocation();
+				this.horzontalDividerLocation = this.indexingWindow.getHorzontalDividerLocation();
+				this.indexingWindow.reset(this);
+			}
+			
 		} 
 		catch (ClientException e) 
 		{
 			e.printStackTrace();
 		}
-		this.user.setBatchID(-1);
 	}
 	
 	
@@ -161,14 +228,15 @@ public class BatchState
 	 */
 	public void zoom(boolean in)
 	{
-		if(in) //zoom in
+		if(in && this.zoomLevel <= 2.25) //zoom in
 		{
-			
+			zoomLevel += 0.25;
 		}
-		else //zoom out
+		else if(!in && this.zoomLevel >= .5 ) //zoom out
 		{
-			
+			zoomLevel -= 0.25;
 		}
+		this.indexingWindow.repaintImage();
 	}
 	
 	
@@ -178,6 +246,7 @@ public class BatchState
 	public void toggleHighlights()
 	{
 		this.highlightsVisible = !this.highlightsVisible;
+		indexingWindow.getImagePanel().drawHighlights();
 	}
 	
 	
@@ -231,7 +300,6 @@ public class BatchState
 	{
 		try 
 		{
-			User u = this.user;
 			DownloadBatch_Result result = cc.downloadBatch(new DownloadBatch_Params(this.user.getUsername(),this.user.getPassword(),Integer.toString(projectID)));
 			if(result.getBatchID() == -1)
 			{
@@ -241,16 +309,40 @@ public class BatchState
 						JOptionPane.ERROR_MESSAGE);
 				return;
 			}
+			this.horzontalDividerLocation = this.getIndexingWindow().getHorzontalDividerLocation();
+			this.verticalDividerLocation = this.getIndexingWindow().getVerticalDividerLocation();
 			this.user.setBatchID(result.getBatchID());
 			this.batch=result.getBatch();
+			this.batch.setFile(result.getImageURL()); //updating image url from server
 			this.project = result.getProject();
-			this.fields = result.getFields();
+			this.fields = this.getFields();
 			this.inverted = false;
 			this.highlightsVisible = true;
-			this.currentCell = new Cell();
-			this.currentCell.field = 1;
-			this.currentCell.record = 1;
-			//this.dataValues = new String[this.fields.size()][this.project.getRecordsPerImage()]; //fields are x-coord, records are y
+			this.currentCell = new Cell(0,0);
+			this.imageX=0;
+			this.dataValues = new String[this.project.getRecordsPerImage()][this.fields.size()+1]; //fields are x-coord, records are y
+			this.cellQuality = new boolean[this.project.getRecordsPerImage()][this.fields.size()];
+			
+			for(int i=0;i<getProject().getRecordsPerImage();i++) //columns
+			{
+				for(int j=0;j<getFields().size();j++) //rows
+				{
+					cellQuality[i][j] = true;
+				}
+			}
+			
+			this.correctors = new HashMap<Integer,Corrector>();
+			for(int j=0;j<this.fields.size();j++)
+			{
+				if(this.fields.get(j).getKnownData()!=null)
+				{
+					Corrector c = new Corrector(this);
+					c.useDictionary(this.fields.get(j).getKnownData());
+					this.correctors.put(j, c);
+				}
+			}
+			
+			this.indexingWindow.reset(this);
 		} 
 		catch (Exception e) 
 		{
@@ -262,37 +354,515 @@ public class BatchState
 		}
 	}
 	
+	/**
+	 * clears current users info
+	 */
+	public void clear()
+	{
+		this.inverted = false;
+		this.highlightsVisible = false;
+		this.zoomLevel = 0;
+		this.user = null;
+		this.dataValues = null;
+		this.currentCell = null;
+		this.batch = null;
+		this.fields = null;
+		this.project = null;
+		this.listeners.clear();
+	}
+
+	/**
+	 * Updates values, checks if word is valid, then allerts batch state listeners
+	 * @param cell
+	 * @param value
+	 */
+	public void valueChanged(Cell cell, String value)
+	{
+		value = value.trim();
+		this.dataValues[cell.getRecord()][cell.getColumn()] = value;
+		if(!value.isEmpty())
+		{
+			if(this.correctors.containsKey(cell.getColumn()))
+			{
+				Corrector c = this.correctors.get(cell.getColumn());
+				this.cellQuality[cell.getRecord()][cell.getColumn()] = c.foundWord(value);
+			}
+		}
+		// check
+		for(BatchStateListener l : listeners)
+		{
+			l.valueChanged(cell, value);
+		}
+	}
 	
+	/**
+	 * updates cell and alerts batch state listeners
+	 * @param cell
+	 */
+	public void cellChanged(Cell cell)
+	{
+		this.currentCell = cell;
+		for(BatchStateListener l : listeners)
+		{
+			l.currentCellChanged(cell);
+		}
+	}
+	
+	
+	
+	// GETTERS AND SETTERS
+	
+	
+	/**
+	 * Adds listener to array
+	 * @param listener
+	 */
+	public void addListener(BatchStateListener listener)
+	{
+		listeners.add(listener);
+	}
+	
+	/**
+	 * @return the cc
+	 */
+	public ClientCommunicator getCc() {
+		return cc;
+	}
+
+	/**
+	 * @param cc the cc to set
+	 */
+	public void setCc(ClientCommunicator cc) {
+		this.cc = cc;
+	}
+
+	/**
+	 * @return the loginWindow
+	 */
+	public LoginWindow getLoginWindow() {
+		return loginWindow;
+	}
+
+	/**
+	 * @param loginWindow the loginWindow to set
+	 */
+	public void setLoginWindow(LoginWindow loginWindow) {
+		this.loginWindow = loginWindow;
+	}
+
+	/**
+	 * @return the indexingWindow
+	 */
+	public IndexingWindow getIndexingWindow() {
+		return indexingWindow;
+	}
+
+	/**
+	 * @param indexingWindow the indexingWindow to set
+	 */
+	public void setIndexingWindow(IndexingWindow indexingWindow) {
+		this.indexingWindow = indexingWindow;
+	}
+
+	/**
+	 * @return the inverted
+	 */
+	public boolean isInverted() {
+		return inverted;
+	}
+
+	/**
+	 * @param inverted the inverted to set
+	 */
+	public void setInverted(boolean inverted) {
+		this.inverted = inverted;
+	}
+
+	/**
+	 * @return the highlightsVisible
+	 */
+	public boolean isHighlightsVisible() {
+		return highlightsVisible;
+	}
+
+	/**
+	 * @param highlightsVisible the highlightsVisible to set
+	 */
+	public void setHighlightsVisible(boolean highlightsVisible) {
+		this.highlightsVisible = highlightsVisible;
+	}
+
+	/**
+	 * @return the zoomLevel
+	 */
+	public double getZoomLevel() {
+		return zoomLevel;
+	}
+
+	/**
+	 * @param zoomLevel the zoomLevel to set
+	 */
+	public void setZoomLevel(double zoomLevel) {
+		this.zoomLevel = zoomLevel;
+	}
+
+	/**
+	 * @return the user
+	 */
 	public User getUser() {
 		return user;
 	}
 
-	
+	/**
+	 * @param user the user to set
+	 */
 	public void setUser(User user) {
 		this.user = user;
 	}
+
+	/**
+	 * @return the dataValues
+	 */
+	public String[][] getDataValues() {
+		return dataValues;
+	}
+
+	/**
+	 * @param dataValues the dataValues to set
+	 */
+	public void setDataValues(String[][] dataValues) {
+		this.dataValues = dataValues;
+	}
+
+	/**
+	 * @return the currentCell
+	 */
+	public Cell getCurrentCell() {
+		return currentCell;
+	}
 	
-	
+	/**
+	 * @param currentCell the currentCell to set
+	 */
+	public void setCurrentCell(Cell currentCell) {
+		this.currentCell = currentCell;
+	}
+
+	/**
+	 * @return the batch
+	 */
 	public Batch getBatch() {
 		return batch;
 	}
 
-	
-	
-	
-	//current cell - not static
-	//indexed data values - not static
-	// listeners from entries, image, field help, etc.
-	// listen to AND from
-	//synchronization.java
-	/*
-	 * 
-	 * 
-	 * 
+	/**
+	 * @param batch the batch to set
 	 */
-}
-interface BatchStateListener
-{
-	public void valueChange(Cell cell, String newValue);
-	public void currentCellChanged(Cell newCurrentCell);
+	public void setBatch(Batch batch) {
+		this.batch = batch;
+	}
+
+	/**
+	 * @return the fields
+	 */
+	public ArrayList<Field> getFields() 
+	{
+		if(this.project!=null && this.fields==null)
+		{
+			try 
+			{
+				this.fields = cc.getFields(new GetFields_Params(this.user.getUsername(), this.user.getPassword(), Integer.toString(this.project.getProjectID()))).getFields();
+			} catch (ClientException e) 
+			{
+				e.printStackTrace();
+				return null;
+			}
+		}
+		return fields;
+	}
+
+	/**
+	 * @param fields the fields to set
+	 */
+	public void setFields(ArrayList<Field> fields) {
+		this.fields = fields;
+	}
+
+	/**
+	 * @return the project
+	 */
+	public Project getProject() {
+		return project;
+	}
+
+	/**
+	 * @param project the project to set
+	 */
+	public void setProject(Project project) {
+		this.project = project;
+	}
+
+	/**
+	 * @return the windowHeight
+	 */
+	public int getWindowHeight() {
+		return windowHeight;
+	}
+
+	/**
+	 * @param windowHeight the windowHeight to set
+	 */
+	public void setWindowHeight(int windowHeight) {
+		this.windowHeight = windowHeight;
+	}
+
+	/**
+	 * @return the windowWidth
+	 */
+	public int getWindowWidth() {
+		return windowWidth;
+	}
+
+	/**
+	 * @param windowWidth the windowWidth to set
+	 */
+	public void setWindowWidth(int windowWidth) {
+		this.windowWidth = windowWidth;
+	}
+
+	/**
+	 * @return the windowPostion
+	 */
+	public Point getWindowPostion() {
+		return windowPostion;
+	}
+
+	/**
+	 * @param windowPostion the windowPostion to set
+	 */
+	public void setWindowPostion(Point windowPostion) {
+		this.windowPostion = windowPostion;
+	}
+
+	/**
+	 * @return the horzontalDividerLocation
+	 */
+	public int getHorzontalDividerLocation() {
+		return horzontalDividerLocation;
+	}
+
+	/**
+	 * @param horzontalDividerLocation the horzontalDividerLocation to set
+	 */
+	public void setHorzontalDividerLocation(int horzontalDividerLocation) {
+		this.horzontalDividerLocation = horzontalDividerLocation;
+	}
+
+	/**
+	 * @return the verticalDividerLocation
+	 */
+	public int getVerticalDividerLocation() {
+		return verticalDividerLocation;
+	}
+
+	/**
+	 * @param verticalDividerLocation the verticalDividerLocation to set
+	 */
+	public void setVerticalDividerLocation(int verticalDividerLocation) {
+		this.verticalDividerLocation = verticalDividerLocation;
+	}
+
+	/**
+	 * @return the imageX
+	 */
+	public int getImageX() {
+		return imageX;
+	}
+
+	/**
+	 * @param imageX the imageX to set
+	 */
+	public void setImageX(int imageX) {
+		this.imageX = imageX;
+	}
+
+	/**
+	 * @return the imageY
+	 */
+	public int getImageY() {
+		return imageY;
+	}
+
+	/**
+	 * @param imageY the imageY to set
+	 */
+	public void setImageY(int imageY) {
+		this.imageY = imageY;
+	}
+
+	public ArrayList<String> getFieldHelps() {
+		return fieldHelps;
+	}
+
+	public void setFieldHelps(ArrayList<String> fieldHelps) {
+		if(fieldHelps == null && fields != null)
+		{
+			this.fieldHelps = new ArrayList<String>();
+			for(Field field : fields)
+			{
+				try 
+				{
+					DownloadFile_Result result = cc.downloadFile(new DownloadFile_Params(field.getHelpHTML()));
+					String help = new String(result.getFileBytes());
+					this.fieldHelps.add(help);
+				} 
+				catch (ClientException e) 
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		//this.fieldHelps = fieldHelps;
+	}
+
+	/**
+	 * @return the listeners
+	 */
+	public ArrayList<BatchStateListener> getListeners() {
+		return listeners;
+	}
+
+	/**
+	 * @param listeners the listeners to set
+	 */
+	public void setListeners(ArrayList<BatchStateListener> listeners) {
+		this.listeners = listeners;
+	}
+
+	/**
+	 * @return the tableVScroll
+	 */
+	public int getTableVScroll() {
+		return tableVScroll;
+	}
+
+	/**
+	 * @param tableVScroll the tableVScroll to set
+	 */
+	public void setTableVScroll(int tableVScroll) {
+		this.tableVScroll = tableVScroll;
+	}
+
+	/**
+	 * @return the tableHScroll
+	 */
+	public int getTableHScroll() {
+		return tableHScroll;
+	}
+
+	/**
+	 * @param tableHScroll the tableHScroll to set
+	 */
+	public void setTableHScroll(int tableHScroll) {
+		this.tableHScroll = tableHScroll;
+	}
+
+	/**
+	 * @return the listVScroll
+	 */
+	public int getListVScroll() {
+		return listVScroll;
+	}
+
+	/**
+	 * @param listVScroll the listVScroll to set
+	 */
+	public void setListVScroll(int listVScroll) {
+		this.listVScroll = listVScroll;
+	}
+
+	/**
+	 * @return the listHScroll
+	 */
+	public int getListHScroll() {
+		return listHScroll;
+	}
+
+	/**
+	 * @param listHScroll the listHScroll to set
+	 */
+	public void setListHScroll(int listHScroll) {
+		this.listHScroll = listHScroll;
+	}
+
+	/**
+	 * @return the formVScholl
+	 */
+	public int getFormVScroll() {
+		return formVScroll;
+	}
+
+	/**
+	 * @param formVScholl the formVScholl to set
+	 */
+	public void setFormVScroll(int formVScholl) {
+		this.formVScroll = formVScholl;
+	}
+
+	/**
+	 * @return the formHScroll
+	 */
+	public int getFormHScroll() {
+		return formHScroll;
+	}
+
+	/**
+	 * @param formHScroll the formHScroll to set
+	 */
+	public void setFormHScroll(int formHScroll) {
+		this.formHScroll = formHScroll;
+	}
+
+	/**
+	 * @return the helpVScroll
+	 */
+	public int getHelpVScroll() {
+		return helpVScroll;
+	}
+
+	/**
+	 * @param helpVScroll the helpVScroll to set
+	 */
+	public void setHelpVScroll(int helpVScroll) {
+		this.helpVScroll = helpVScroll;
+	}
+
+	/**
+	 * @return the cellQuality
+	 */
+	public boolean[][] getCellQuality() {
+		return cellQuality;
+	}
+
+	/**
+	 * @param cellQuality the cellQuality to set
+	 */
+	public void setCellQuality(boolean[][] cellQuality) {
+		this.cellQuality = cellQuality;
+	}
+
+	/**
+	 * @return the correctors
+	 */
+	public Map<Integer, Corrector> getCorrectors() {
+		return correctors;
+	}
+
+	/**
+	 * @param correctors the correctors to set
+	 */
+	public void setCorrectors(Map<Integer, Corrector> correctors) {
+		this.correctors = correctors;
+	}
 }

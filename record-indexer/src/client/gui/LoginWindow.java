@@ -16,6 +16,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
+import javax.swing.JRootPane;
 import javax.swing.JTextField;
 
 import shared.model.User;
@@ -66,7 +67,7 @@ public class LoginWindow extends JFrame implements ActionListener
 		c.gridx = 0;
 		c.gridy = 0;
 		add(usernameLabel,c);
-		usernameField = new JTextField("test1");
+		usernameField = new JTextField("");
 		c.gridwidth = 4;
 		c.gridx = 1;
 		c.gridy = 0;
@@ -77,7 +78,7 @@ public class LoginWindow extends JFrame implements ActionListener
 		c.gridx = 0;
 		c.gridy = 1;
 		add(passwordLabel, c);
-		passwordField = new JPasswordField("test1");
+		passwordField = new JPasswordField("");
 		c.gridwidth = 4;
 		c.gridx = 1;
 		c.gridy = 1;
@@ -96,6 +97,9 @@ public class LoginWindow extends JFrame implements ActionListener
 		c.gridx = 2;
 		c.gridy = 3;
 		add(exitButton,c);
+		
+		JRootPane rootPane = this.getRootPane();
+	    rootPane.setDefaultButton(loginButton);
 	}
 	public void actionPerformed(ActionEvent a)
 	{
@@ -154,6 +158,9 @@ public class LoginWindow extends JFrame implements ActionListener
 		c.ipady = 2;
 		c.gridy = 2;
 		welcome.add(okayButton,c);
+		
+		JRootPane rootPane = welcome.getRootPane();
+	    rootPane.setDefaultButton(okayButton);
 		
 		welcome.addWindowListener(new WindowAdapter() 
 		{

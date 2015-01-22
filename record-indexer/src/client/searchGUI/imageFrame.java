@@ -9,7 +9,7 @@ public class imageFrame extends JFrame {
 
 	public imageFrame() throws HeadlessException 
 	{
-		// TODO Auto-generated constructor stub
+		
 	}
 
 
